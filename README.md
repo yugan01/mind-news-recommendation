@@ -27,8 +27,8 @@ python -m pip install -r requirements.txt
 python scripts/download_mind.py
 ```
 
-This downloads and extracts the official training and validation archives into
-`data/raw/`. The dataset is intentionally excluded from Git.
+This downloads and extracts the RecZoo MIND-small mirror into `data/raw/`.
+The dataset is intentionally excluded from Git.
 
 ## Run the baselines
 
@@ -77,7 +77,6 @@ python -m unittest discover -s tests -v
 
 1. Add frozen semantic embeddings with the same history averaging and cosine
    scoring procedure.
-2. Add user-level paired bootstrap confidence intervals.
-3. Compare histories of 5, 10, and 20 articles on users with at least 20.
-4. Add the two-tower extension after the core comparison is stable.
+2. Compare histories of 5, 10, and 20 articles on users with at least 20.
+3. Add the two-tower extension after the core comparison is stable.
 
