@@ -1,65 +1,20 @@
-## Project objective
+# Project objective and work plan
 
-The project aims to build a personalized news recommender using a user’s previously clicked articles.
+The project builds a personalized news recommender using a user's previously clicked articles. For every recommendation event, the system receives the user's click history, the set of candidate articles shown, and each article's title and abstract; it must rank the candidates so clicked articles appear near the top.
 
-For every recommendation event, the system receives:
-
-1. The user’s article-click history.
-2. A set of candidate articles shown to that user.
-3. The title and abstract of each article.
-
-It must rank the candidate articles so that the articles the user eventually clicked appear near the top.
-
-The broader research objective is to determine whether understanding an article’s **meaning** produces better recommendations than matching its **keywords**.
-
-## Central hypothesis
-
-The hypothesis is:
-
-> Semantic text embeddings will rank clicked news articles more accurately than TF-IDF when both methods use the same user history, candidate articles, and recommendation procedure.
-
-This comparison must be controlled:
-
-| Component | TF-IDF | Semantic embeddings |
-|---|---|---|
-| Article text | Title + abstract | Title + abstract |
-| User history | Latest 20 articles | Latest 20 articles |
-| User profile | Average article vectors | Average article vectors |
-| Candidate score | Cosine similarity | Cosine similarity |
-| Difference | Keyword representation | Semantic representation |
-
-Keeping everything else identical means that any improvement should mainly come from the text representation.
-
-The popularity baseline is only a basic reference point. The current result—TF-IDF beating popularity—does **not** test the central hypothesis yet because semantic embeddings have not been evaluated.
-
-## Models in the project
-
-There are four planned models:
-
-1. **Popularity baseline** — completed  
-   Ranks articles according to their training-data click counts. It is not personalized.
-
-2. **TF-IDF baseline** — completed  
-   Represents articles through important words and ranks candidates according to keyword similarity with the user’s history.
-
-3. **Frozen semantic embeddings** — not completed  
-   Uses a pretrained model such as `all-MiniLM-L6-v2` to represent article meaning. The pretrained encoder should initially remain frozen.
-
-4. **Two-tower model** — not completed  
-   Learns separate user and article vectors from recommendation feedback. This is an extension and should only be attempted after the main TF-IDF-versus-embeddings comparison works.
+The revised direction, core question, model list, and evaluation plan are anchored in `project-direction.md`. This document tracks completed work, remaining work, and responsibilities.
 
 ## Work completed so far
 
 - Public GitHub repository created.
 - MIND-small dataset downloaded and parsed.
 - Popularity model implemented.
-- TF-IDF model implemented.
+- TF-IDF model implemented (now a bonus reference row).
 - NDCG@5 and MRR evaluation implemented.
 - User-level bootstrap confidence intervals implemented.
 - Prediction exports implemented.
 - Automated tests added.
-- A fixed 5,000-user preliminary experiment completed.
-- TF-IDF significantly outperformed popularity on that sample.
+- A fixed 5,000-user preliminary experiment completed on the supplied validation split (13 Oct, seed 4285): TF-IDF 0.2929 vs popularity 0.2301 NDCG@5, bootstrap CI entirely positive.
 
 The implementation and results are in the [GitHub repository](https://github.com/yugan01/mind-news-recommendation).
 
@@ -67,120 +22,62 @@ The implementation and results are in the [GitHub repository](https://github.com
 
 ### 1. Establish the development and final-evaluation split
 
-The current smoke experiment used the supplied validation data. Therefore, its results should be treated as **preliminary**, not as the untouched final evaluation.
-
-From this point onward, we should:
+The smoke run used the supplied validation data, so its results are preliminary. From this point onward:
 
 - Create a chronological development/tuning split from the training data.
-- Develop and debug the remaining models only on that split.
+- Develop and debug all remaining models only on that split.
 - Freeze model and preprocessing decisions.
-- Run the supplied validation set once more as the final reported comparison.
-- Clearly disclose that it was previously used for an initial pipeline check.
+- Run the supplied validation set once as the final reported comparison, disclosing the earlier pipeline check.
 
-### 2. Implement frozen semantic embeddings
+### 2. Frozen semantic embeddings
 
-This is the most important next step because it tests the central hypothesis.
+Encode every article's title + abstract once with `all-MiniLM-L6-v2` (frozen), cache the vectors, average the latest 20 history vectors per user, rank impression candidates by cosine similarity, and evaluate on exactly the same users and impressions as the other models.
 
-The implementation should:
+### 3. BPR-MF baseline and shared training loop
 
-- Combine each article’s title and abstract.
-- Encode every article once using `all-MiniLM-L6-v2`.
-- Cache the article vectors.
-- Average the latest 20 history vectors to produce a user vector.
-- Rank candidates using cosine similarity.
-- Evaluate exactly the same users and impressions as TF-IDF.
+Implement matrix factorization trained with BPR on impression click labels. This is the classical collaborative baseline and also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses.
 
-### 3. Run the controlled comparison
+### 4. LightGCN
 
-Compare:
+Add normalized neighbor aggregation over the user-article click graph on top of the BPR-MF training loop. BPR-MF versus LightGCN is the controlled ablation of what graph propagation contributes.
 
-- Popularity
-- TF-IDF
-- Frozen semantic embeddings
+### 5. Two-tower extension (last)
 
-For each model, report:
+Only after the core comparison is stable: a user tower over reading history and an article tower over article text, trained on impression click labels, compared separately against the frozen and graph methods.
 
-- NDCG@5
-- MRR
-- Mean paired difference against TF-IDF
-- 95% user-level bootstrap confidence interval
+### 6. Beyond-accuracy metrics
 
-The hypothesis is supported if the semantic model’s NDCG@5 improvement over TF-IDF is positive and its confidence interval supports that conclusion.
+On the prediction exports: intra-list diversity, novelty (inverse popularity of ranked articles), catalogue coverage across users, and exposure concentration. These run on existing and future prediction CSVs without model changes.
 
-### 4. Test sensitivity to history length
+### 7. LLM-as-judge panel
 
-For users with at least 20 historical clicks, rerun both text models using:
+Sample a user subset; prompt an LLM with each user's history and each model's top-5; rate alignment, novelty, diversity, and article quality against a fixed rubric published with the project; manually spot-check calibration before the full run.
 
-- Latest 5 articles
-- Latest 10 articles
-- Latest 20 articles
+### 8. Statistical comparison and subgroup analysis
 
-This tests whether longer histories improve recommendations or introduce unrelated older interests.
+For each model pair: NDCG@5, MRR, mean paired difference, 95% user-level bootstrap confidence interval. Subgroups: history length (10-19 vs 20+), interest narrowness (category entropy), user connectivity in the click graph. Also history-length sensitivity (latest 5/10/20 on users with at least 20).
 
-### 5. Analyze user groups
+### 9. Failure analysis
 
-Compare users with:
+Inspect examples where keyword matching succeeds but embeddings fail and vice versa, where graph structure fails on cold-start or niche users, and where popularity unexpectedly performs best. Feed representative cases into the presentation.
 
-- 10–19 history articles
-- 20 or more history articles
+### 10. Ethical and limitation analysis
 
-This helps determine whether one representation works better for users with richer histories.
+Clicks do not necessarily represent satisfaction; users can only click articles they were shown; reading histories are privacy-sensitive; recommendations may create narrow topic bubbles; popularity and graph methods may over-promote already-popular content; the experiment ranks displayed candidates and cannot evaluate unseen articles. Ground these claims in the exposure and diversity metrics where possible.
 
-### 6. Perform failure analysis
+### 11. Final deliverables
 
-Inspect examples where:
+Comparison charts, confidence-interval chart, subgroup and history-length analyses, representative success and failure examples, ethical discussion, defensible conclusion, poster or slide deck, and a clear contribution statement for each team member.
 
-- TF-IDF succeeds but embeddings fail.
-- Embeddings succeed but TF-IDF fails.
-- Both fail.
-- Popularity unexpectedly performs best.
-
-Possible explanations include keyword overlap, semantic similarity, ambiguous interests, changing interests, and very popular articles.
-
-### 7. Implement the two-tower extension
-
-Only after the central comparison is complete:
-
-- Build a user tower from reading history.
-- Build an article tower from article features.
-- Train them using impression click labels.
-- Compare the trained model separately against the frozen methods.
-
-Because it changes both the representation and the learning procedure, it should not be treated as part of the clean TF-IDF-versus-embeddings test.
-
-### 8. Complete the ethical and limitation analysis
-
-The report should discuss:
-
-- Clicks do not necessarily represent satisfaction.
-- Users can only click articles they were shown.
-- Reading histories are privacy-sensitive.
-- Recommendations may create narrow topic bubbles.
-- Popularity methods may over-promote already popular content.
-- The experiment ranks displayed candidates and cannot evaluate unseen articles.
-
-### 9. Prepare the final deliverables
-
-The remaining presentation work includes:
-
-- Comparison charts
-- Confidence-interval chart
-- History-length analysis
-- Representative success and failure examples
-- Ethical discussion
-- Defensible conclusion
-- Poster or slide deck
-- Clear contribution statement for each team member
+Open item (undecided): whether to redo the project critique deck for feedback on the new direction (Prof Kan offered; old deck still counts for grades) and whether to present at the optional Week 10-12 critique session. No owner assigned until the team decides.
 
 ## Responsibilities
 
-Work breakdown from the proposal (`mind-small-project-summary.md`, section 5): K 30%, M 30%, Y 20%, S 20%. K = Kevin, M = Marcus, Y = Yugan, S = Sood.
+Percentages stay 30/30/20/20. Implementation deadline 26 Oct; analysis and deliverables ready by 9 Nov for the 11 Nov presentation. K = Kevin, M = Marcus, Y = Yugan, S = Sood.
 
-- Kevin (K) — data, baselines, and evaluation; finish by 26 Oct. Largely preempted: Yugan already implemented the data pipeline, popularity/TF-IDF baselines, and evaluation, so the remaining K work is the dev/final split discipline and pipeline notes.
-- Marcus (M) — embedding models and experiments (frozen embeddings, then two-tower), finish by 26 Oct. In chat Yugan suggested Kevin take the frozen-embedding step; confirm who owns it.
-- Yugan (Y) — analysis: model comparison, confidence intervals, history-length groups, failure cases, ethics, conclusions, presenting; weeks 3–5, by 9 Nov.
-- Sood (S) — final deliverable: motivation/thesis/related work, poster assembly, editing, submission coordination, presenting; ready by 9 Nov for the 11 Nov presentation.
+- Kevin, 30% — infrastructure and evaluation tooling: dev/final split discipline; BPR-MF and the shared BPR training loop; frozen semantic embeddings and an initial run testing them; beyond-accuracy metric code; LLM-as-judge pipeline.
+- Marcus, 30% — neural graph and trained models: LightGCN on the click graph (reusing the shared training loop); two-tower extension after the core comparison is stable.
+- Yugan, 20% — evaluation and testing: paired statistical comparisons and bootstrap CIs across all model pairs; subgroup analyses; history-length sensitivity; failure-case collection; test coverage for the new components. His earlier pipeline and baseline implementation counts toward this share.
+- Sood, 20% — deliverables and reporting: poster/presentation design and assembly; final report editing for consistent methods, figures, and claims; ethical analysis write-up; contribution statement; submission coordination and rehearsals.
 
-Handoffs: K→M early week 1 (data format + evaluation interface); K and M → Y and S by 26 Oct (working code, experiments, per-example predictions, method notes).
-
-Everyone uses `docs/` in this repo to stay on the same page about project direction.
+Handoffs: Kevin supplies Marcus with the shared training loop and the evaluation interface early; by 26 Oct Kevin and Marcus supply Yugan and Sood with working code, completed experiments, per-example predictions, and method notes so the analysis and deliverables proceed without further implementation help.
