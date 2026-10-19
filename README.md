@@ -5,16 +5,17 @@ recommenders — frozen semantic text embeddings, LightGCN over the click graph,
 and a trained two-tower model — on which signal best personalizes news ranking,
 for which users, and at what cost in diversity, novelty, and exposure.
 
-Full project context lives in `docs/`:
+Full project context lives in the repo root and `docs/`. The **master document
+is `project-summary.md`** — it holds the canonical, team-wide agreed scope,
+direction, and work breakdown, and takes precedence over every other document:
 
-- `docs/project-direction.md` — the current core question, model list, and
-  evaluation plan (start here).
-- `docs/project-stuff-to-do.md` — completed work, remaining work, and each
+- `project-summary.md` — the master document: core question, model
+  list, evaluation plan, course-requirements mapping, and work breakdown
+  (start here).
+- `tasks.md` — the live task list: completed work, remaining work, and each
   member's responsibilities.
 - `docs/instructor-feedback.md` — the instructor feedback that motivated the
   revised direction.
-- `mind-small-project-summary.md` (repo root) — the full project proposal,
-  dataset feasibility audit, experiment design, and work breakdown.
 
 The current implementation includes:
 
@@ -98,5 +99,5 @@ python -m unittest discover -s tests -v
 5. Add beyond-accuracy metrics and the LLM-as-judge panel.
 6. Add the two-tower extension after the core comparison is stable.
 
-See `docs/project-stuff-to-do.md` for the full task list and owners.
+See `tasks.md` for the full task list and owners.
 

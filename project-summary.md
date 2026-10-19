@@ -1,6 +1,8 @@
 # News Recommendation with Text Embeddings
 
-CP4285 group project proposal — 5 October 2026. Revised 19 October 2026 after instructor feedback (see `docs/instructor-feedback.md`); the current direction is anchored in `docs/project-direction.md` and the live work plan is `docs/project-stuff-to-do.md`.
+CP4285 group project proposal — 5 October 2026. Revised 19 October 2026 after instructor feedback (see `docs/instructor-feedback.md`).
+
+**This is the project's master document.** It holds the canonical, team-wide agreed scope, direction, and work breakdown. The live task list and all current state details are in `tasks.md`; any other documents defer to this file. Scope changes must be reflected here — and only team-wide agreed, verified information belongs in it.
 
 ## 1. Core idea and thesis
 
@@ -77,7 +79,15 @@ A method is "better" only relative to a question: better on average, better for 
 
 Results establish prediction of recorded clicks within displayed candidate lists. They do not establish user satisfaction or discovery of articles that were never shown. Discuss exposure bias, the privacy implications of reading histories, and whether recommendations concentrate on a narrow set of topics. Include representative failure cases and these limits in the final presentation.
 
-## 5. Suggested work breakdown and timeline
+## 5. Course requirements mapping
+
+- Classical baseline: BPR-MF (collaborative filtering / matrix factorization), plus popularity.
+- Neural or advanced model: frozen embeddings, LightGCN, two-tower.
+- Rigorous offline evaluation: NDCG@5, MRR, bootstrap confidence intervals.
+- Error analysis: failure-case comparison across models (where each representation fails).
+- Ethical analysis: clicks are not satisfaction; exposure bias; privacy of reading histories; topic-bubble concentration; popularity amplification — grounded in the exposure and diversity metrics above.
+
+## 6. Suggested work breakdown and timeline
 
 ### Total workload
 
@@ -90,7 +100,7 @@ The complete project consists of six work packages:
 - Examine ethical implications and state defensible conclusions.
 - Prepare the final poster/presentation, rehearse, and submit.
 
-Revised 19 October after the direction change. Workload shares stay K 30%, M 30%, Y 20%, and S 20% (K = Kevin, M = Marcus, Y = Yugan, S = Sood). K and M complete the experiment pipeline by 26 October. Y and S complete the analysis and delivery by 9 November for the 11 November presentation. The live version of this breakdown is `docs/project-stuff-to-do.md`.
+Revised 19 October after the direction change. Workload shares stay K 30%, M 30%, Y 20%, and S 20% (K = Kevin, M = Marcus, Y = Yugan, S = Sood). K and M complete the experiment pipeline by 26 October. Y and S complete the analysis and delivery by 9 November for the 11 November presentation. The live version of this breakdown is `tasks.md`.
 
 ### K — infrastructure, BPR-MF, and evaluation tooling — 30%
 
@@ -135,7 +145,7 @@ Undecided: whether to redo the project critique deck for feedback on the new dir
 
 Keep coordination to two main handoffs. Early in week 1, K supplies M with prepared data and the evaluation interface. By 26 October, K and M supply Y and S with working code, completed experiments, per-example predictions, and method notes. Y and S must be able to complete the analysis and presentation without further help from K or M.
 
-## 6. Expected deliverables
+## 7. Expected deliverables
 
 - Reproducible data preparation, model code, and run instructions.
 - Model predictions, metric summaries, confidence intervals, and comparison charts.
