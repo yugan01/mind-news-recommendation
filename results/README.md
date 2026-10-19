@@ -26,10 +26,13 @@ Paired user-level bootstrap results with 10,000 resamples:
 | MRR | +0.0652 | [+0.0559, +0.0745] |
 
 Both intervals are entirely positive on this sample. This supports TF-IDF as a
-meaningful baseline, but it does **not** yet test the project's central thesis:
-the frozen semantic-embedding model must be evaluated on exactly the same users
-and impressions. The untouched full validation run should remain the final
-reported evaluation after implementation choices are settled.
+meaningful baseline, but it does **not** yet address the project's core
+question: the embedding-based models (frozen semantic embeddings, LightGCN,
+two-tower) must be evaluated on exactly the same users and impressions. This
+run also used the supplied validation split as a pipeline smoke check, so it is
+preliminary; final results come from a single validation run after development
+moves to a chronological split of the training data, with the prior use
+disclosed.
 
 Generated prediction files and raw data are excluded from Git because of their
 size. Reproduce these figures with the commands in the project README.
