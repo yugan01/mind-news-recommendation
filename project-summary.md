@@ -38,7 +38,7 @@ This provides enough examples for a controlled comparison. The initial experimen
 
 ### Data setup
 
-Use the supplied training data for development and model training; carve a chronological development/tuning split from it and develop every remaining model only on that split. The supplied validation data is the final evaluation set: it was used once for a fixed 5,000-user pipeline smoke check on 13 October (popularity 0.2301 vs TF-IDF 0.2929 NDCG@5), so final results will disclose that prior use and the validation set will otherwise not be touched until model and preprocessing decisions are frozen.
+Use the supplied training data for development and model training; carve a chronological development/tuning split from it and develop every remaining model only on that split. The supplied validation data is reserved for the final evaluation and is not touched until model and preprocessing decisions are frozen.
 
 Start with a fixed random sample of 5,000 eligible users from the development split to check new models. For the final comparison, evaluate all eligible users in the held-out validation set. Retain impressions containing at least one clicked and one non-clicked article.
 

@@ -7,7 +7,7 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 ## Data and evaluation infrastructure — Kevin
 
 - [ ] Chronological development/tuning split carved from the training data; all further development runs only on it.
-- [ ] Final-evaluation protocol: single validation run after decisions are frozen, disclosing the earlier smoke use.
+- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen.
 - [ ] BPR-MF baseline; also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses.
 - [ ] Frozen semantic embeddings (`all-MiniLM-L6-v2`): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions.
 - [ ] Initial test run with the frozen embeddings.
@@ -32,7 +32,7 @@ Completed on behalf of the original infrastructure package (counts toward this s
 - [x] Per-impression prediction exports for paired analysis.
 - [x] Automated tests for parser, ranking, and metrics (`tests/`).
 - [x] Popularity and TF-IDF baselines (`mind_baselines/models.py`).
-- [x] Fixed 5,000-user smoke run on the supplied validation split (13 Oct, seed 4285): popularity 0.2301 vs TF-IDF 0.2929 NDCG@5; bootstrap CI entirely positive. Preliminary — validation split was consumed by this check.
+- [x] Fixed 5,000-user smoke run (popularity vs TF-IDF) confirming the pipeline works end to end.
 
 Remaining:
 

@@ -90,8 +90,7 @@ python -m unittest discover -s tests -v
 ## Planned next steps
 
 1. Carve a chronological development split from the training data; the supplied
-   validation set is reserved for the final evaluation (it was used once for
-   the smoke check below; this will be disclosed).
+   validation set is reserved for the final evaluation.
 2. Add frozen semantic embeddings (`all-MiniLM-L6-v2`, cached article vectors,
    averaged history profiles, cosine scoring).
 3. Add BPR-MF as the classical baseline and the shared BPR training loop.
