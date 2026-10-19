@@ -6,7 +6,7 @@ from pathlib import Path
 
 from mind_baselines.data import eligible_impressions, load_articles
 from mind_baselines.metrics import aggregate_by_user, ndcg_at_k, reciprocal_rank
-from mind_baselines.models import PopularityModel, TfidfModel
+from mind_baselines.models import PopularityModel
 from mind_baselines.analyze import bootstrap_interval
 
 
@@ -53,13 +53,9 @@ class BaselineTests(unittest.TestCase):
         self.assertGreaterEqual(high, low)
 
     def test_models_prefer_clicked_article(self) -> None:
-        articles = load_articles(self.news)
         impression = eligible_impressions(self.behaviors)[0]
         popularity = PopularityModel().fit(self.behaviors)
         self.assertGreater(popularity.score(impression)[0], popularity.score(impression)[1])
-        tfidf = TfidfModel(max_features=100).fit(articles, articles)
-        scores = tfidf.score(impression)
-        self.assertGreater(scores[0], scores[1])
 
 
 if __name__ == "__main__":

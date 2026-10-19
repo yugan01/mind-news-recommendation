@@ -128,7 +128,7 @@ Finish the MVP items by 26 October. Prioritize BPR-MF and LightGCN before the tw
 - Own test coverage for the new components.
 - Produce final charts and explain what the evidence supports.
 
-The data pipeline, popularity and TF-IDF baselines, and evaluation exports Y already built count toward this share. Complete the analysis during weeks 3–5, by 9 November.
+The data pipeline, popularity baseline, and evaluation exports Y already built count toward this share. Complete the analysis during weeks 3–5, by 9 November.
 
 ### S — final deliverable, ethics, and presenting — 20%
 

@@ -31,8 +31,8 @@ Completed on behalf of the original infrastructure package (counts toward this s
 - [x] User-level paired bootstrap confidence intervals (`mind_baselines/analyze.py`).
 - [x] Per-impression prediction exports for paired analysis.
 - [x] Automated tests for parser, ranking, and metrics (`tests/`).
-- [x] Popularity baseline and an early TF-IDF prototype (`mind_baselines/models.py`); TF-IDF is excluded from the final comparison — BPR-MF is the sole classical baseline.
-- [x] Fixed 5,000-user smoke run (popularity vs the early TF-IDF prototype) confirming the pipeline works end to end.
+- [x] Data pipeline plus a popularity baseline and an early TF-IDF prototype (prototype removed during the 19 Oct cleanup; BPR-MF is the sole classical baseline going forward).
+- [x] Fixed 5,000-user smoke run (popularity vs the early TF-IDF prototype) confirming the pipeline works end to end; the run record was removed with the prototype.
 
 Remaining:
 

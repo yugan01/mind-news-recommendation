@@ -10,9 +10,9 @@ from pathlib import Path
 import numpy as np
 from collections import defaultdict
 
-from .data import iter_eligible_impressions, load_articles, sample_eligible_users
+from .data import iter_eligible_impressions, sample_eligible_users
 from .metrics import ndcg_at_k, reciprocal_rank
-from .models import PopularityModel, TfidfModel
+from .models import PopularityModel
 
 
 def evaluate_model(
@@ -85,16 +85,12 @@ def main() -> None:
     parser.add_argument("--max-history", type=int, default=20)
     parser.add_argument("--sample-users", type=int)
     parser.add_argument("--seed", type=int, default=4285)
-    parser.add_argument("--max-features", type=int, default=100_000)
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    train_news_path, eval_news_path, train_behaviors, eval_behaviors = resolve_dataset_files(
+    _, _, train_behaviors, eval_behaviors = resolve_dataset_files(
         args.train_dir, args.eval_dir
     )
-    train_news = load_articles(train_news_path)
-    eval_news = load_articles(eval_news_path)
-    all_news = {**train_news, **eval_news}
     selected_users = None
     if args.sample_users is not None:
         selected_users = sample_eligible_users(
@@ -108,10 +104,6 @@ def main() -> None:
 
     models = {
         "popularity": PopularityModel().fit(train_behaviors),
-        "tfidf": TfidfModel(
-            max_history=args.max_history,
-            max_features=args.max_features,
-        ).fit(train_news, all_news),
     }
     metrics = {
         name: evaluate_model(
@@ -129,7 +121,6 @@ def main() -> None:
         "max_history": args.max_history,
         "sample_users": args.sample_users,
         "seed": args.seed,
-        "max_features": args.max_features,
     }
     metrics_path = args.output_dir / "metrics.json"
     metrics_path.write_text(json.dumps(metrics, indent=2), encoding="utf-8")

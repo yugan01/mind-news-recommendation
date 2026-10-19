@@ -20,7 +20,6 @@ direction, and work breakdown, and takes precedence over every other document:
 The current implementation includes:
 
 - a training-click popularity baseline;
-- a TF-IDF cosine-similarity baseline (kept as a reference row);
 - user-averaged NDCG@5 and MRR evaluation;
 - per-impression prediction exports for paired statistical analysis; and
 - synthetic tests for the parser, ranking, and metrics.
@@ -77,7 +76,7 @@ Compare two models with a paired user-level bootstrap confidence interval:
 ```powershell
 python -m mind_baselines.analyze `
   --baseline outputs/smoke/popularity_predictions.csv `
-  --challenger outputs/smoke/tfidf_predictions.csv `
+  --challenger outputs/smoke/embedding_predictions.csv `
   --output outputs/smoke/paired_comparison.json
 ```
 
