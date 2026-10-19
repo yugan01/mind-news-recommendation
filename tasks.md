@@ -6,19 +6,19 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 
 ## Data and evaluation infrastructure — Kevin
 
-- [ ] Chronological development/tuning split carved from the training data; all further development runs only on it.
-- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen.
-- [ ] BPR-MF baseline; also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses.
-- [ ] Frozen semantic embeddings (`all-MiniLM-L6-v2`): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions.
-- [ ] Initial test run with the frozen embeddings.
-- [ ] Beyond-accuracy metrics on prediction exports: intra-list diversity, novelty (inverse popularity), catalogue coverage, exposure concentration.
-- [ ] LLM-as-judge pipeline: sampled user subset, fixed published rubric (alignment, novelty, diversity, article quality), manual calibration spot-checks.
+- [ ] Chronological development/tuning split carved from the training data; all model development runs only on it. [MVP]
+- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP]
+- [ ] Frozen semantic embeddings (`all-MiniLM-L6-v2`): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions. [MVP]
+- [ ] Initial test run with the frozen embeddings. [MVP]
+- [ ] Beyond-accuracy metrics on prediction exports, standard formulations only: intra-list diversity (average pairwise 1 − cosine dissimilarity of article embeddings within each top-5), novelty (self-information −log2 p of training popularity, Vargas & Castells 2011), catalogue coverage, exposure concentration (Gini coefficient). [Extra]
+- [ ] LLM-as-judge pipeline: sampled user subset, fixed published rubric (alignment, novelty, diversity, article quality), manual calibration spot-checks. [Extra]
 
 ## Neural graph and trained models — Marcus
 
-- [ ] LightGCN on the user-article click graph, reusing the shared BPR training loop (normalized neighbor aggregation is the delta over BPR-MF).
-- [ ] Two-tower extension (user tower over history, article tower over text, trained on impression click labels) — only after the core comparison is stable.
-- [ ] Export results, predictions, configurations, and model-method notes for both.
+- [ ] BPR-MF baseline; also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses. [MVP]
+- [ ] LightGCN on the user-article click graph, reusing the shared BPR training loop (normalized neighbor aggregation is the delta over BPR-MF). [MVP]
+- [ ] Two-tower extension (user tower over history, article tower over text, trained on impression click labels) — after the core comparison is stable. [Strongly recommended]
+- [ ] Export results, predictions, configurations, and model-method notes. [MVP]
 
 ## Evaluation, testing, and statistical comparison — Yugan
 
@@ -31,15 +31,15 @@ Completed on behalf of the original infrastructure package (counts toward this s
 - [x] User-level paired bootstrap confidence intervals (`mind_baselines/analyze.py`).
 - [x] Per-impression prediction exports for paired analysis.
 - [x] Automated tests for parser, ranking, and metrics (`tests/`).
-- [x] Popularity and TF-IDF baselines (`mind_baselines/models.py`).
-- [x] Fixed 5,000-user smoke run (popularity vs TF-IDF) confirming the pipeline works end to end.
+- [x] Popularity baseline and an early TF-IDF prototype (`mind_baselines/models.py`); TF-IDF is excluded from the final comparison — BPR-MF is the sole classical baseline.
+- [x] Fixed 5,000-user smoke run (popularity vs the early TF-IDF prototype) confirming the pipeline works end to end.
 
 Remaining:
 
-- [ ] Paired statistical comparisons and bootstrap CIs across all model pairs.
-- [ ] Subgroup analyses: history length (10–19 vs 20+), interest narrowness (category entropy of history), user connectivity in the click graph.
-- [ ] History-length sensitivity: latest 5 / 10 / 20 articles on users with at least 20.
-- [ ] Failure-case collection: where one representation succeeds and another fails; graph cold-start users; unexpected popularity wins. Feeds the error analysis.
+- [ ] Paired statistical comparisons and bootstrap CIs across all model pairs. [MVP]
+- [ ] Subgroup analyses: history length (10–19 vs 20+), interest narrowness (category entropy of history), user connectivity in the click graph. [MVP]
+- [ ] History-length sensitivity: latest 5 / 10 / 20 articles on users with at least 20. [Extra]
+- [ ] Failure-case collection: where one representation succeeds and another fails; graph cold-start users; unexpected popularity wins. Feeds the error analysis. [MVP]
 - [ ] Test coverage for the new components (BPR-MF, embeddings, LightGCN, metrics tooling).
 - [ ] Final charts and what-the-evidence-supports narrative.
 
