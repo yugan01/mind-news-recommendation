@@ -8,6 +8,7 @@ from unittest.mock import patch
 import numpy as np
 from numpy.typing import NDArray
 
+from scripts.smoke_mind import load_smoke
 from src import config
 from src.analyze import Prediction, bootstrap_interval, compare, read_predictions
 from src.contracts import Model, RankingInput
@@ -156,6 +157,34 @@ class InfrastructureTests(unittest.TestCase):
             np.testing.assert_array_equal(model.score(data.evaluation[0].inputs), [0.0, 8.0])
         unseen = replace(data.evaluation[0].inputs, candidate_ids=("unseen",))
         np.testing.assert_array_equal(model.score(unseen), [0.0])
+
+    def test_mind_smoke_limits_examples_and_article_corpus(self) -> None:
+        development = load_development()
+        development = replace(
+            development,
+            training=replace(
+                development.training,
+                articles={
+                    **development.training.articles,
+                    "unused": replace(development.training.articles["A"], article_id="unused"),
+                },
+            ),
+        )
+        with patch("scripts.smoke_mind.load_development", return_value=development):
+            data = load_smoke()
+        self.assertEqual(data.training.examples, development.training.examples[:2])
+        self.assertEqual(data.evaluation, development.evaluation[:2])
+        expected = {
+            article
+            for example in (*data.training.examples, *data.evaluation)
+            for article in (*example.inputs.history, *example.inputs.candidate_ids)
+        }
+        self.assertEqual(set(data.training.articles), expected)
+        self.assertEqual(set(data.training.article_indices), expected)
+        self.assertEqual(
+            set(data.training.user_indices),
+            {example.inputs.user_id for example in data.training.examples},
+        )
 
     def test_evaluation_and_standard_run_outputs(self) -> None:
         data = load_development()

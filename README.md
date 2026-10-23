@@ -75,6 +75,16 @@ python -m scripts.smoke_semantic
 
 This checks ranking/export plumbing, finite normalized vectors, and cache reuse, including a previously unseen user. Its synthetic outputs and separate vector cache live in `outputs/smoke/`; the metrics are not experiment results. It does not open MIND validation or encode the full article corpus.
 
+Tiny check using actual MIND training data (download it first):
+
+```sh
+python -m scripts.smoke_mind
+```
+
+This runs two training and two chronological development impressions, embedding only their referenced articles. It checks the real data/model/export/paired-analysis path without a full experiment or validation access. Outputs are isolated in `outputs/smoke/mind/`.
+
+See `docs/model-handoff.md` for Marcus's model integration, test commands, and full development/final experiment sequence.
+
 Fast synthetic unit tests (no encoder download or loading):
 
 ```sh
