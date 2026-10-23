@@ -1,101 +1,68 @@
 # MIND-small news recommendation
 
-Reproducible experiments for the CP4285 group project: comparing embedding-based
-recommenders — frozen semantic text embeddings, LightGCN over the click graph,
-and a trained two-tower model — on which signal best personalizes news ranking,
-for which users, and at what cost in diversity, novelty, and exposure.
+CP4285 project comparing frozen semantic embeddings, LightGCN, and task-learned representations for personalized news ranking, with popularity and BPR-MF baselines.
 
-Full project context lives in the repo root and `docs/`. The **master document
-is `project-summary.md`** — it holds the canonical, team-wide agreed scope,
-direction, and work breakdown, and takes precedence over every other document:
+`project-summary.md` defines the agreed scope. `tasks.md` tracks progress and owners. Instructor feedback and course requirements are in `docs/`.
 
-- `project-summary.md` — the master document: core question, model
-  list, evaluation plan, course-requirements mapping, and work breakdown
-  (start here).
-- `tasks.md` — the live task list: completed work, remaining work, and each
-  member's responsibilities.
-- `docs/instructor-feedback.md` — the instructor feedback that motivated the
-  revised direction.
+## Setup and development run
 
-The current implementation includes:
+Use Python 3.11 or newer. Create a virtual environment and install `requirements.txt`.
 
-- a training-click popularity baseline;
-- user-averaged NDCG@5 and MRR evaluation;
-- per-impression prediction exports for paired statistical analysis; and
-- synthetic tests for the parser, ranking, and metrics.
-
-## Setup
-
-Python 3.11 or newer is recommended.
-
-```powershell
+```sh
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+```
+
+Activate the virtual environment: on Linux/macOS use `source .venv/bin/activate`; on Windows PowerShell use `.venv\Scripts\Activate.ps1`. Then run:
+
+```sh
 python -m pip install -r requirements.txt
+python -m scripts.download_mind
+python -m src.run
 ```
 
-## Download MIND-small
+The download command retrieves the original-format training archive from [Recommenders/MIND](https://huggingface.co/datasets/Recommenders/MIND). It preserves full timestamps in `behaviors.tsv`. RecZoo's CSV only retains hour-of-day and is unsuitable for the chronological split.
 
-```powershell
-python scripts/download_mind.py
+All shared values and paths live in `src/config.py`:
+
+- Latest 20% of training impressions form the chronological development holdout. Equal timestamps stay together.
+- Evaluate a deterministic sample of 5,000 eligible development users, seed 4285. Sampling does not reduce the training partition.
+- Require at least 10 available history articles and both clicked and non-clicked candidates. Eligibility is checked before capping history at the latest 20.
+- Use title plus abstract for article text. Retain category and timestamps for analysis.
+
+Only popularity is implemented so far. Outputs go to `outputs/dev/`: aggregate `metrics.json` and a directory per model containing `predictions.csv` and `impression_metrics.csv`. Rerunning replaces these outputs.
+
+NDCG@5 and MRR are averaged within each user, then across users. Score ties preserve the supplied candidate order.
+
+## Adding a model
+
+Put each model in its own file under `src/models/`. Follow `Model` in `src/contracts.py`:
+
+- `name` identifies the model's output directory.
+- `fit(training)` receives the shared article corpus, chronological training examples, and deterministic user/article index mappings. Model implementations must not independently read behavior files or change the cohort.
+- `score(inputs)` receives user/history/candidate information without evaluation labels. Return one finite score per candidate in the supplied order.
+
+History limits are applied centrally to training and evaluation inputs. Training includes all pre-cutoff impressions, including those ineligible for evaluation. Models must document their unseen-user/article behavior; popularity assigns unseen articles zero clicks.
+
+Add the model class to `MODELS` in `src/config.py`. Every enabled model is fitted and evaluated by the same run command. Article metadata is shared; held-out interaction labels are never fitting data. Final evaluation also supplies validation article metadata so text models can encode unseen candidates.
+
+```sh
+python -m src.analyze
 ```
 
-This downloads and extracts the RecZoo MIND-small mirror into `data/raw/`.
-The dataset is intentionally excluded from Git.
+This compares every enabled model pair on development predictions using 10,000 paired user-level bootstrap samples. It rejects differences in impression sets, users, candidate order, or labels. Differences are challenger minus baseline. Results go to `outputs/dev/comparisons.json`.
 
-## Run the baselines
+## Final evaluation
 
-Start with a deterministic 5,000-user smoke run:
+**Do not use supplied validation for development.** After the team freezes model and preprocessing decisions, obtain `MINDsmall_dev.zip` from the same source and place its original `news.tsv` and `behaviors.tsv` in `data/raw/validation/`.
 
-```powershell
-python -m mind_baselines.run `
-  --train-dir data/raw/MIND_small_x1 `
-  --eval-dir data/raw/MIND_small_x1 `
-  --sample-users 5000 `
-  --output-dir outputs/smoke
+```sh
+python -m src.final
 ```
 
-Run all eligible validation users by omitting `--sample-users`:
-
-```powershell
-python -m mind_baselines.run `
-  --train-dir data/raw/MIND_small_x1 `
-  --eval-dir data/raw/MIND_small_x1 `
-  --output-dir outputs/validation
-```
-
-An eligible user has at least 10 articles in the supplied history. An eligible
-impression contains at least one clicked and one non-clicked candidate. Each
-user profile uses at most the latest 20 history articles.
-
-Outputs include `metrics.json` and one prediction CSV per model. Candidate
-scores and ranks are exported before evaluation labels are used.
-
-Compare two models with a paired user-level bootstrap confidence interval:
-
-```powershell
-python -m mind_baselines.analyze `
-  --baseline outputs/smoke/popularity_predictions.csv `
-  --challenger outputs/smoke/embedding_predictions.csv `
-  --output outputs/smoke/paired_comparison.json
-```
+Run this once for the final comparison. It fits every enabled model on all supplied training impressions, evaluates all eligible validation users without sampling, and writes metrics, predictions, and paired comparisons to `outputs/final/`. Freezing decisions is a team checkpoint; there is no software freezing subsystem.
 
 ## Tests
 
-```powershell
-python -m unittest discover -s tests -v
+```sh
+python -m unittest discover -s tests
 ```
-
-## Planned next steps
-
-1. Carve a chronological development split from the training data; the supplied
-   validation set is reserved for the final evaluation.
-2. Add frozen semantic embeddings (`all-MiniLM-L6-v2`, cached article vectors,
-   averaged history profiles, cosine scoring).
-3. Add BPR-MF as the classical baseline and the shared BPR training loop.
-4. Add LightGCN on the click graph, reusing that training loop.
-5. Add beyond-accuracy metrics and the LLM-as-judge panel.
-6. Add the two-tower extension after the core comparison is stable.
-
-See `tasks.md` for the full task list and owners.
-

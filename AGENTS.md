@@ -20,6 +20,7 @@ Instructions for any AI agent working in this repository.
 
 ## Working agreement
 
+- This is a one-off school project. Keep fixed experiment settings in `src/config.py` and commands argument-free. Do not add configurable pipeline frameworks, frozen-configuration systems, manifests, or software/artifact fingerprinting. New models belong in `src/models/` and follow `src/contracts.py`.
 - The instructor feedback motivating the current direction is in `docs/instructor-feedback.md`.
 - All models share identical inputs and protocol (title + abstract, latest 20 history articles, eligibility filters, same users and impressions); any new model must preserve this controlled-comparison contract.
 - The supplied validation split is reserved for the final evaluation; develop only on a chronological split of the training data.

@@ -6,8 +6,9 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 
 ## Data and evaluation infrastructure — Kevin
 
-- [ ] Chronological development/tuning split carved from the training data; all model development runs only on it. [MVP]
-- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP]
+- [x] Chronological development/tuning split carved from the original-format training data; all model development runs only on it. [MVP] Latest 20% by timestamp; full timestamp ties stay together. Original training archive obtained from the Recommenders/MIND mirror.
+- [x] Shared infrastructure rebuilt under `src/`: fixed settings in `src/config.py`, label-free model contract, popularity in `src/models/popularity.py`, centralized history preprocessing, and strict paired-example checks. Popularity development run: 5,000 users, 8,332 impressions; NDCG@5 0.214301, MRR 0.242211.
+- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP] Separate `python -m src.final` command and protocol documented; original validation has not been downloaded or evaluated.
 - [ ] Frozen semantic embeddings (`all-MiniLM-L6-v2`): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions. [MVP]
 - [ ] Initial test run with the frozen embeddings. [MVP]
 - [ ] Beyond-accuracy metrics on prediction exports, standard formulations only: intra-list diversity (average pairwise 1 − cosine dissimilarity of article embeddings within each top-5), novelty (self-information −log2 p of training popularity, Vargas & Castells 2011), catalogue coverage, exposure concentration (Gini coefficient). [Extra]
@@ -25,10 +26,10 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 Completed on behalf of the original infrastructure package (counts toward this share):
 
 - [x] Public GitHub repository created.
-- [x] MIND-small dataset download and parsing (`scripts/download_mind.py`, `mind_baselines/data.py`).
+- [x] MIND-small dataset download and parsing (`scripts/download_mind.py`, `src/data.py`; original infrastructure by Yugan, subsequently rebuilt by Kevin).
 - [x] Eligibility filters (history >= 10; impressions with >= 1 clicked and >= 1 non-clicked candidate).
-- [x] NDCG@5 and MRR evaluation (`mind_baselines/metrics.py`).
-- [x] User-level paired bootstrap confidence intervals (`mind_baselines/analyze.py`).
+- [x] NDCG@5 and MRR evaluation (`src/metrics.py`).
+- [x] User-level paired bootstrap confidence intervals (`src/analyze.py`).
 - [x] Per-impression prediction exports for paired analysis.
 - [x] Automated tests for parser, ranking, and metrics (`tests/`).
 - [x] Data pipeline plus a popularity baseline and an early TF-IDF prototype (prototype removed during the 19 Oct cleanup; BPR-MF is the sole classical baseline going forward).
