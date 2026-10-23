@@ -11,6 +11,7 @@ TRAIN_DIR = ROOT / "data/raw/train"
 VALIDATION_DIR = ROOT / "data/raw/validation"
 DEV_OUTPUT_DIR = ROOT / "outputs/dev"
 FINAL_OUTPUT_DIR = ROOT / "outputs/final"
+SMOKE_OUTPUT_DIR = ROOT / "outputs/smoke"
 
 DEV_FRACTION = 0.2
 MIN_HISTORY = 10

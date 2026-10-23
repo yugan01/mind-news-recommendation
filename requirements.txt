@@ -1,2 +1,2 @@
 numpy>=2.0,<3
-sentence-transformers>=6.1,<7
+sentence-transformers[image]>=6.1,<7

@@ -67,6 +67,16 @@ Run this once for the final comparison. It fits every enabled model on all suppl
 
 ## Tests
 
+Small real-model functionality check (downloads the encoder on first use, but embeds only four synthetic articles):
+
+```sh
+python -m scripts.smoke_semantic
+```
+
+This checks ranking/export plumbing, finite normalized vectors, and cache reuse, including a previously unseen user. Its synthetic outputs and separate vector cache live in `outputs/smoke/`; the metrics are not experiment results. It does not open MIND validation or encode the full article corpus.
+
+Fast synthetic unit tests (no encoder download or loading):
+
 ```sh
 python -m unittest discover -s tests
 ```
