@@ -29,7 +29,11 @@ All shared values and paths live in `src/config.py`:
 - Require at least 10 available history articles and both clicked and non-clicked candidates. Eligibility is checked before capping history at the latest 20.
 - Use title plus abstract for article text. Retain category and timestamps for analysis.
 
-Only popularity is implemented so far. Outputs go to `outputs/dev/`: aggregate `metrics.json` and a directory per model containing `predictions.csv` and `impression_metrics.csv`. Rerunning replaces these outputs.
+Popularity and frozen semantic embeddings are enabled. Outputs go to `outputs/dev/`: aggregate `metrics.json` and a directory per model containing `predictions.csv` and `impression_metrics.csv`. Rerunning replaces these outputs.
+
+The semantic model uses `google/embeddinggemma-2` with only its 270M-parameter text encoder, the `SentenceSimilarity` prompt, and full 768-dimensional normalized article vectors. It averages history vectors and ranks by cosine similarity; empty or cancelling histories receive tied zero scores. It needs no learned user IDs or click-label training.
+
+The first semantic run downloads the encoder and encodes the shared article corpus. CPU inference uses float32, two threads, and batches of eight. Article vectors are cached in `outputs/cache/embeddinggemma-2.npz`; later runs encode only new or changed article texts. Delete that cache if you change the encoder or its encoding settings. A complete `src.run` is an experiment, not a small functionality test; current Kevin work is limited to smoke verification before handing full runs to Marcus.
 
 NDCG@5 and MRR are averaged within each user, then across users. Score ties preserve the supplied candidate order.
 

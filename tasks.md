@@ -8,9 +8,12 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 
 - [x] Chronological development/tuning split carved from the original-format training data; all model development runs only on it. [MVP] Latest 20% by timestamp; full timestamp ties stay together. Original training archive obtained from the Recommenders/MIND mirror.
 - [x] Shared infrastructure rebuilt under `src/`: fixed settings in `src/config.py`, label-free model contract, popularity in `src/models/popularity.py`, centralized history preprocessing, and strict paired-example checks. Popularity development run: 5,000 users, 8,332 impressions; NDCG@5 0.214301, MRR 0.242211.
-- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP] Separate `python -m src.final` command and protocol documented; original validation has not been downloaded or evaluated.
-- [ ] Frozen semantic embeddings (`all-MiniLM-L6-v2`): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions. [MVP]
+- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP] Marcus will execute it with the completed models. Separate `python -m src.final` command and protocol documented; original validation has not been downloaded or evaluated.
+- [~] Frozen semantic embeddings (`google/embeddinggemma-2`, text-only 270M): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions. [MVP] Implementation and synthetic tests underway; real-model smoke verification remains.
 - [ ] Initial test run with the frozen embeddings. [MVP]
+- [ ] Semantic-model handoff: method notes, cache/run instructions, and smoke-verification status (no full semantic experiment results). [MVP]
+
+Current Kevin scope: implementation, small functional smoke tests, and handoff only. Marcus will run the full shared experiments and final validation with his completed models; Kevin will not generate full semantic comparison results now. Beyond-accuracy metrics and LLM judging remain deferred.
 - [ ] Beyond-accuracy metrics on prediction exports, standard formulations only: intra-list diversity (average pairwise 1 − cosine dissimilarity of article embeddings within each top-5), novelty (self-information −log2 p of training popularity, Vargas & Castells 2011), catalogue coverage, exposure concentration (Gini coefficient). [Extra]
 - [ ] LLM-as-judge pipeline: sampled user subset, fixed published rubric (alignment, novelty, diversity, article quality), manual calibration spot-checks. [Extra]
 

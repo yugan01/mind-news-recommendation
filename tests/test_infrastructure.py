@@ -165,7 +165,8 @@ class InfrastructureTests(unittest.TestCase):
         metrics = evaluate_model(model, data.evaluation, output)
         self.assertEqual(metrics["ndcg_at_5"], 1.0)
         self.assertEqual(set(read_predictions(output / "predictions.csv")), {"8", "9"})
-        run_experiment(data, self.root / "run")
+        with patch.object(config, "MODELS", (InspectingModel,)):
+            run_experiment(data, self.root / "run")
         self.assertTrue((self.root / "run/metrics.json").exists())
         with patch.object(model, "score", return_value=np.array([np.nan, 0.0])):
             with self.assertRaisesRegex(DataError, "invalid scores"):

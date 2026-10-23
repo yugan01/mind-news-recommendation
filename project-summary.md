@@ -50,7 +50,7 @@ For each impression, use up to the most recent 20 articles in its supplied histo
 
 1. Popularity baseline (completed): rank candidates by their click counts in the training data.
 2. BPR-MF: matrix factorization trained with BPR on impression click labels — the classical collaborative baseline, and the shared BPR training loop (embedding tables, pair sampling, loss) reused by LightGCN.
-3. Frozen semantic embeddings (MVP): encode article text with a pretrained model such as [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2). Average the history article vectors, rank candidates by cosine similarity. Do not fine-tune the encoder.
+3. Frozen semantic embeddings (MVP): encode article text with [EmbeddingGemma 2](https://huggingface.co/google/embeddinggemma-2), loading only its 270M-parameter text model. Average the history article vectors, rank candidates by cosine similarity. Do not fine-tune the encoder.
 4. LightGCN (MVP): user and article embeddings learned through normalized neighbor aggregation over the user–article click graph, trained with BPR. BPR-MF versus LightGCN isolates what graph propagation contributes.
 5. Small two-tower model (strongly recommended after the core comparison is stable): one network converts the history into a user vector; another converts article features into an article vector. Train on impression click labels so compatible user–article pairs receive higher scores.
 
