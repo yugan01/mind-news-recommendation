@@ -141,7 +141,7 @@ These are one declared development configuration, not a hidden sweep. Any later 
 
 `BPRMFModel` creates layer-0 user and article embedding tables and passes raw embeddings to the shared BPR objective. At inference it scores a candidate with the inner product between the resolved user vector and candidate article vector.
 
-The model stores only detached inference arrays plus interaction masks after `fit`; it does not retain an optimizer or computation graph. Calling `fit` again resets all learned state.
+The model stores only detached inference arrays plus trained-evidence masks after `fit`; it does not retain an optimizer or computation graph. Calling `fit` again resets all learned state.
 
 ## 7. LightGCN model
 
@@ -158,20 +158,26 @@ At inference the model uses the detached combined embeddings from the final trai
 
 ## 8. Cold-start and scoring policy
 
-The policy is identical for BPR-MF and LightGCN wherever the same state exists:
+The policy is identical for BPR-MF and LightGCN wherever the same trained state exists. Each fitted model records boolean trained-evidence masks rather than inferring training from IDs or positive-history membership:
+
+- for BPR-MF, mark the users and articles that occur in an actually sampled training triple across the completed epochs;
+- for LightGCN, start with those sampled users and articles, then mark graph nodes that lie within the configured propagation depth of them because those layer-0 embeddings structurally participate in the BPR computation graph; and
+- do not count a history-only edge, one-class impression, index-table membership, or untouched random initialization as trained evidence by itself.
+
+The optimizer uses the explicit sampled layer-0 penalty from Section 5 and no global optimizer weight decay, so untouched embeddings remain untouched and cannot acquire trained status indirectly.
 
 ### User vector
 
-- If the evaluation user has at least one positive fitting interaction, use the learned user embedding.
-- Otherwise, average the final embeddings of history articles that had at least one positive fitting interaction.
+- If the evaluation user is marked in the model's trained-user mask, use the learned user embedding.
+- Otherwise, average the final embeddings of history articles marked in the model's trained-article mask.
 - If no such history article exists, use the all-zero vector.
 
-The history fallback uses only article embeddings learned from fitting interactions. It does not update parameters or add evaluation edges.
+The history fallback uses only article embeddings with structural training evidence. It does not update parameters or add evaluation edges.
 
 ### Candidate vector and score
 
-- A candidate with at least one positive fitting interaction uses its learned final article embedding.
-- A candidate with no positive fitting interaction receives score `0.0`; its random layer-0 initialization is never exposed as evidence.
+- A candidate marked in the model's trained-article mask uses its learned final article embedding.
+- Any other candidate receives score `0.0`; its random layer-0 initialization is never exposed as evidence.
 - If the user vector is all zero, every candidate receives `0.0` and the existing stable candidate order breaks ties deterministically.
 
 This is a declared non-personalized fallback, not a claim that the graph model understands new articles. Failure analysis must separately inspect cold users and cold articles.
@@ -235,7 +241,8 @@ Do not silently skip malformed examples, resample from evaluation data, or fall 
 - Propagation: one LightGCN layer matches a hand-computed neighbor-weighted result.
 - Ablation: LightGCN with zero propagation layers yields the same embedding definition and scores as BPR-MF from identical layer-0 weights.
 - Leakage: changing held-out examples does not change fitted pairs, graph edges, or learned scores.
-- Cold start: seen/unseen users, partly known history, interaction-unseen candidates, and empty fallback all match the declared policy.
+- Trained evidence: actual sampled triples produce the BPR-MF masks; LightGCN expands the sampled-node masks by exactly the configured graph depth; history-only and one-class rows do not expose untouched random vectors.
+- Cold start: trained/untrained users, partly trained history, untrained candidates, and empty fallback all match the declared policy.
 - Refit: a second `fit` starts cleanly and produces the seeded result.
 
 ### Repository gates
