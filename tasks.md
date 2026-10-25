@@ -19,10 +19,10 @@ Current Kevin scope: implementation, small functional smoke tests, and handoff, 
 
 ## Neural graph and trained models — Marcus
 
-- [ ] BPR-MF baseline; also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses. [MVP]
-- [ ] LightGCN on the user-article click graph, reusing the shared BPR training loop (normalized neighbor aggregation is the delta over BPR-MF). [MVP]
+- [x] BPR-MF baseline; also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses. [MVP] Development evidence: `python -m src.run` at `352b0c9`; see `docs/marcus-model-handoff.md`.
+- [x] LightGCN on the user-article click graph, reusing the shared BPR training loop (normalized neighbor aggregation is the delta over BPR-MF). [MVP] Development evidence: `python -m src.run` at `352b0c9`; see `docs/marcus-model-handoff.md`.
 - [ ] Two-tower extension (user tower over history, article tower over text, trained on impression click labels) — after the core comparison is stable. [Strongly recommended]
-- [ ] Export results, predictions, configurations, and model-method notes. [MVP]
+- [x] Export results, predictions, configurations, and model-method notes. [MVP] Four paired development exports, six comparisons, beyond-accuracy results, and method notes audited; generated outputs remain ignored and are handed off by path in `docs/marcus-model-handoff.md`.
 
 ## Evaluation, testing, and statistical comparison — Yugan
 
