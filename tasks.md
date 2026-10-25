@@ -6,12 +6,16 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 
 ## Data and evaluation infrastructure — Kevin
 
-- [ ] Chronological development/tuning split carved from the training data; all model development runs only on it. [MVP]
-- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP]
-- [ ] Frozen semantic embeddings (`all-MiniLM-L6-v2`): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; evaluate on the same users and impressions. [MVP]
-- [ ] Initial test run with the frozen embeddings. [MVP]
-- [ ] Beyond-accuracy metrics on prediction exports, standard formulations only: intra-list diversity (average pairwise 1 − cosine dissimilarity of article embeddings within each top-5), novelty (self-information −log2 p of training popularity, Vargas & Castells 2011), catalogue coverage, exposure concentration (Gini coefficient). [Extra]
-- [ ] LLM-as-judge pipeline: sampled user subset, fixed published rubric (alignment, novelty, diversity, article quality), manual calibration spot-checks. [Extra]
+- [x] Chronological development/tuning split carved from the original-format training data; all model development runs only on it. [MVP] Latest 20% by timestamp; full timestamp ties stay together. Original training archive obtained from the Recommenders/MIND mirror.
+- [x] Shared infrastructure rebuilt under `src/`: fixed settings in `src/config.py`, label-free model contract, popularity in `src/models/popularity.py`, centralized history preprocessing, and strict paired-example checks. Popularity development run: 5,000 users, 8,332 impressions; NDCG@5 0.214301, MRR 0.242211.
+- [ ] Final evaluation: single validation run after model and preprocessing decisions are frozen. [MVP] Marcus will execute it with the completed models. Separate `python -m src.final` command and protocol documented; original validation has not been downloaded or evaluated.
+- [x] Frozen semantic embeddings (`google/embeddinggemma-2`, text-only 270M): encode title+abstract once per article, cache vectors, average latest-20 history vectors, cosine scoring; use the shared model/evaluation interface. [MVP] Implementation and synthetic tests complete; real-model functionality verified. Full experiment results remain for Marcus.
+- [x] Initial test run with the frozen embeddings. [MVP] `python -m scripts.smoke_semantic` passed on four synthetic articles and two impressions, including finite normalized vectors, exports, an unseen user, and identical predictions after cache reuse. Shared processor dependencies installed via the standard image extra. No full development or validation experiment was run; synthetic metrics are not reportable results.
+- [x] Semantic-model handoff: method notes, cache/run instructions, and Marcus's integration/development/final run sequence in `docs/model-handoff.md`. [MVP] Real-MIND smoke passed with 237 referenced articles, two training impressions, and two development impressions, exercising exports and paired analysis. No full semantic development experiment or final validation run was performed.
+
+Current Kevin scope: implementation, small functional smoke tests, and handoff, now including beyond-accuracy metrics. Marcus will run the full shared experiments and final validation with his completed models; Kevin will not generate full semantic comparison results now. LLM judging remains deferred; whether to do it is undecided.
+- [x] Beyond-accuracy metrics on prediction exports: top-5 mean pairwise cosine distance, add-one-smoothed training-popularity self-information, and candidate-catalogue coverage. [Extra] Implemented in `src/beyond.py` with development/final post-processing commands; all three are included in synthetic tests and the tiny real-MIND smoke. Definitions are in `docs/beyond-accuracy.md`; awaiting Kevin's review before commit. No full results generated.
+- [ ] LLM-as-judge pipeline: deferred; need not yet established. [Extra] If pursued: sampled user subset, fixed published rubric, manual calibration spot-checks.
 
 ## Neural graph and trained models — Marcus
 
@@ -25,10 +29,10 @@ Legend: `[x]` done · `[ ]` open · `[~]` in progress. Update statuses as work a
 Completed on behalf of the original infrastructure package (counts toward this share):
 
 - [x] Public GitHub repository created.
-- [x] MIND-small dataset download and parsing (`scripts/download_mind.py`, `mind_baselines/data.py`).
+- [x] MIND-small dataset download and parsing (`scripts/download_mind.py`, `src/data.py`; original infrastructure by Yugan, subsequently rebuilt by Kevin).
 - [x] Eligibility filters (history >= 10; impressions with >= 1 clicked and >= 1 non-clicked candidate).
-- [x] NDCG@5 and MRR evaluation (`mind_baselines/metrics.py`).
-- [x] User-level paired bootstrap confidence intervals (`mind_baselines/analyze.py`).
+- [x] NDCG@5 and MRR evaluation (`src/metrics.py`).
+- [x] User-level paired bootstrap confidence intervals (`src/analyze.py`).
 - [x] Per-impression prediction exports for paired analysis.
 - [x] Automated tests for parser, ranking, and metrics (`tests/`).
 - [x] Data pipeline plus a popularity baseline and an early TF-IDF prototype (prototype removed during the 19 Oct cleanup; BPR-MF is the sole classical baseline going forward).
