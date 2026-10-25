@@ -1,4 +1,5 @@
 import unittest
+from dataclasses import replace
 from datetime import datetime
 from unittest.mock import patch
 
@@ -15,6 +16,7 @@ from src.models.bpr import (
     sample_pairs,
     train_bpr,
 )
+from src.models.bpr_mf import BPRMFModel
 
 
 def make_training_data() -> TrainingData:
@@ -165,6 +167,34 @@ class BPRTests(unittest.TestCase):
                 l2=0.0,
                 seed=4285,
             )
+
+    def test_bpr_mf_fit_score_cold_start_and_refit(self) -> None:
+        data = make_training_data()
+        with patch.multiple(config, BPR_EPOCHS=3, BPR_DIM=4):
+            model = BPRMFModel()
+            model.fit(data)
+            first = model.score(data.examples[0].inputs)
+            model.fit(data)
+            second = model.score(data.examples[0].inputs)
+        np.testing.assert_allclose(first, second, rtol=0, atol=1e-7)
+        self.assertEqual(first.shape, (3,))
+        self.assertTrue(np.isfinite(first).all())
+        unseen = replace(data.examples[0].inputs, user_id="NEW", history=("B",))
+        self.assertTrue(np.isfinite(model.score(unseen)).all())
+        empty = replace(unseen, history=())
+        np.testing.assert_array_equal(model.score(empty), np.zeros(3))
+
+    def test_bpr_mf_masks_untrained_candidates(self) -> None:
+        data = make_training_data()
+        with patch.multiple(config, BPR_EPOCHS=1, BPR_DIM=4):
+            model = BPRMFModel()
+            model.fit(data)
+        inputs = replace(data.examples[0].inputs, candidate_ids=("A",))
+        np.testing.assert_array_equal(model.score(inputs), np.zeros(1))
+
+    def test_bpr_mf_rejects_score_before_fit(self) -> None:
+        with self.assertRaisesRegex(DataError, "before fit"):
+            BPRMFModel().score(make_training_data().examples[0].inputs)
 
 
 if __name__ == "__main__":
