@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: Run the test and verify the missing constants fail**
 
-Run: `python3 -m unittest tests.test_bpr.BPRTests.test_fixed_training_settings -v`  
+Run: `python3 -m unittest tests.test_bpr.BPRTests.test_fixed_training_settings -v`
 Expected: `ERROR` with `AttributeError: module 'src.config' has no attribute 'BPR_DIM'`.
 
 - [ ] **Step 3: Add exact dependencies and constants**
@@ -250,7 +250,7 @@ def test_pair_pool_rejects_noncontiguous_indices(self) -> None:
 
 - [ ] **Step 2: Run the pair tests and verify import failure**
 
-Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_pair_pool_skips_one_class_impressions tests.test_bpr.BPRTests.test_sampling_is_epoch_deterministic_and_stays_in_impression tests.test_bpr.BPRTests.test_pair_pool_rejects_no_usable_pairs tests.test_bpr.BPRTests.test_pair_pool_rejects_noncontiguous_indices -v`  
+Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_pair_pool_skips_one_class_impressions tests.test_bpr.BPRTests.test_sampling_is_epoch_deterministic_and_stays_in_impression tests.test_bpr.BPRTests.test_pair_pool_rejects_no_usable_pairs tests.test_bpr.BPRTests.test_pair_pool_rejects_noncontiguous_indices -v`
 Expected: `ERROR` because `src.models.bpr` does not exist.
 
 - [ ] **Step 3: Implement the pair pool and sampler**
@@ -363,7 +363,7 @@ def sample_pairs(pool: PairPool, epoch: int, seed: int, device: torch.device) ->
 
 - [ ] **Step 4: Run the pair tests and verify they pass**
 
-Run the command from Step 2.  
+Run the command from Step 2.
 Expected: all four tests pass.
 
 - [ ] **Step 5: Add failing exact-loss and one-step-update tests**
@@ -439,7 +439,7 @@ def test_shared_training_rejects_nonfinite_loss(self) -> None:
 
 - [ ] **Step 6: Run the new tests and verify missing interfaces fail**
 
-Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_exact_bpr_objective tests.test_bpr.BPRTests.test_shared_training_increases_positive_margin tests.test_bpr.BPRTests.test_shared_training_rejects_nonfinite_loss -v`  
+Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_exact_bpr_objective tests.test_bpr.BPRTests.test_shared_training_increases_positive_margin tests.test_bpr.BPRTests.test_shared_training_rejects_nonfinite_loss -v`
 Expected: `ImportError` for the not-yet-defined public interfaces.
 
 - [ ] **Step 7: Implement the shared provider, objective, and trainer**
@@ -633,7 +633,7 @@ def test_bpr_mf_rejects_score_before_fit(self) -> None:
 
 - [ ] **Step 2: Run the model tests and verify import failure**
 
-Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_bpr_mf_fit_score_cold_start_and_refit tests.test_bpr.BPRTests.test_bpr_mf_masks_untrained_candidates tests.test_bpr.BPRTests.test_bpr_mf_rejects_score_before_fit -v`  
+Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_bpr_mf_fit_score_cold_start_and_refit tests.test_bpr.BPRTests.test_bpr_mf_masks_untrained_candidates tests.test_bpr.BPRTests.test_bpr_mf_rejects_score_before_fit -v`
 Expected: `ImportError` because `src.models.bpr_mf` does not exist.
 
 - [ ] **Step 3: Implement detached collaborative state and scoring**
@@ -897,7 +897,7 @@ if __name__ == "__main__":
 
 - [ ] **Step 2: Run tests and verify import failure**
 
-Run: `.venv/bin/python -m unittest tests.test_lightgcn -v`  
+Run: `.venv/bin/python -m unittest tests.test_lightgcn -v`
 Expected: `ImportError` because `src.models.lightgcn` does not exist.
 
 - [ ] **Step 3: Implement graph construction, propagation, and structural mask expansion**
@@ -1021,7 +1021,7 @@ class LightGCNEmbeddings(EmbeddingProvider):
 
 - [ ] **Step 4: Run the exact graph tests and correct only verified arithmetic**
 
-Run: `.venv/bin/python -m unittest tests.test_lightgcn -v`  
+Run: `.venv/bin/python -m unittest tests.test_lightgcn -v`
 Expected: all three tests pass. If the hand-computed propagation expectation fails, inspect `adjacency.to_dense()` and recalculate the expected values before changing implementation; do not loosen tolerances beyond `1e-7`.
 
 - [ ] **Step 5: Add failing LightGCN model, determinism, graph-boundary, and scoring tests**
@@ -1176,7 +1176,7 @@ Add `import json` at the top of that test file.
 
 - [ ] **Step 2: Run tests and verify registration/shape failures**
 
-Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_collaborative_models_are_registered_after_existing_models tests.test_infrastructure.InfrastructureTests.test_evaluation_and_standard_run_outputs -v`  
+Run: `.venv/bin/python -m unittest tests.test_bpr.BPRTests.test_collaborative_models_are_registered_after_existing_models tests.test_infrastructure.InfrastructureTests.test_evaluation_and_standard_run_outputs -v`
 Expected: registration assertion fails first; after registration, the old summary shape fails until `src/run.py` is updated.
 
 - [ ] **Step 3: Register models and export fixed/per-model metadata**

@@ -101,7 +101,7 @@ def test_shared_cache_rejects_wrong_vector_shape(self) -> None:
 
 - [ ] **Step 2: Run the test and verify import failure**
 
-Run: `.venv/bin/python -m unittest tests.test_semantic.SemanticTests.test_shared_cache_returns_sorted_alignment_and_reuses_vectors tests.test_semantic.SemanticTests.test_shared_cache_rejects_wrong_vector_shape -v`  
+Run: `.venv/bin/python -m unittest tests.test_semantic.SemanticTests.test_shared_cache_returns_sorted_alignment_and_reuses_vectors tests.test_semantic.SemanticTests.test_shared_cache_rejects_wrong_vector_shape -v`
 Expected: `ImportError` because `src.text_embeddings` does not exist.
 
 - [ ] **Step 3: Move the encoder and cache logic into the shared module**
@@ -318,7 +318,7 @@ class TwoTowerTests(unittest.TestCase):
 
 - [ ] **Step 2: Run the feature test and verify import failure**
 
-Run: `.venv/bin/python -m unittest tests.test_two_tower.TwoTowerTests.test_history_features_follow_each_example_not_static_user_id -v`  
+Run: `.venv/bin/python -m unittest tests.test_two_tower.TwoTowerTests.test_history_features_follow_each_example_not_static_user_id -v`
 Expected: `ImportError` because `src.models.two_tower` does not exist.
 
 - [ ] **Step 3: Implement feature alignment and the network**
@@ -387,7 +387,7 @@ class TwoTowerNetwork(nn.Module):
 
 - [ ] **Step 4: Run the feature test and verify it passes**
 
-Run the command from Step 2.  
+Run the command from Step 2.
 Expected: pass.
 
 - [ ] **Step 5: Add failing fit/determinism/cold-start tests**
@@ -589,7 +589,7 @@ self.assertEqual(summary["settings"]["two_tower_epochs"], config.TWO_TOWER_EPOCH
 
 - [ ] **Step 2: Run the focused tests and verify registration failure**
 
-Run: `.venv/bin/python -m unittest tests.test_two_tower.TwoTowerTests.test_two_tower_is_registered_last -v`  
+Run: `.venv/bin/python -m unittest tests.test_two_tower.TwoTowerTests.test_two_tower_is_registered_last -v`
 Expected: assertion failure because `two_tower` is not registered.
 
 - [ ] **Step 3: Register the model and bound smoke cost**

@@ -1,8 +1,8 @@
 # Marcus Models Design
 
 **Status:** Approved by Marcus on 25 October 2026
-**Date:** 25 October 2026  
-**Owner:** Marcus  
+**Date:** 25 October 2026
+**Owner:** Marcus
 **Implementation target:** BPR-MF and LightGCN by 26 October; two-tower only after the core gate passes
 
 ## 1. Purpose
