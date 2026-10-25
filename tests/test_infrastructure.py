@@ -1,3 +1,6 @@
+import csv
+import json
+import math
 import tempfile
 import unittest
 from dataclasses import replace
@@ -11,7 +14,7 @@ from numpy.typing import NDArray
 from scripts.smoke_mind import load_smoke
 from src import config
 from src.analyze import Prediction, bootstrap_interval, compare, read_predictions
-from src.contracts import Model, RankingInput
+from src.contracts import Model, RankingInput, Targets
 from src.data import (
     DataError,
     Impression,
@@ -26,7 +29,10 @@ from src.data import (
 from src.evaluate import evaluate_model
 from src.final import load_final
 from src.metrics import ndcg_at_k, reciprocal_rank, summarize_users
+from src.models.bpr_mf import BPRMFModel
+from src.models.lightgcn import LightGCNModel
 from src.models.popularity import PopularityModel
+from src.models.semantic import SemanticModel
 from src.run import run_experiment
 
 
@@ -172,7 +178,10 @@ class InfrastructureTests(unittest.TestCase):
         )
         with patch("scripts.smoke_mind.load_development", return_value=development):
             data = load_smoke()
-        self.assertEqual(data.training.examples, development.training.examples[:2])
+        self.assertEqual(len(data.training.examples), 2)
+        self.assertTrue(
+            all(set(example.targets.labels) == {0, 1} for example in data.training.examples)
+        )
         self.assertEqual(data.evaluation, development.evaluation[:2])
         expected = {
             article
@@ -197,12 +206,100 @@ class InfrastructureTests(unittest.TestCase):
         with patch.object(config, "MODELS", (InspectingModel,)):
             run_experiment(data, self.root / "run")
         self.assertTrue((self.root / "run/metrics.json").exists())
+        with (self.root / "run/metrics.json").open(encoding="utf-8") as handle:
+            summary = json.load(handle)
+        self.assertEqual(summary["settings"]["bpr_dimension"], config.BPR_DIM)
+        self.assertEqual(summary["settings"]["bpr_optimizer"], "Adam")
+        self.assertEqual(summary["settings"]["lightgcn_layers"], config.LIGHTGCN_LAYERS)
+        self.assertEqual(
+            summary["settings"]["lightgcn_layer_combination"], "uniform_mean"
+        )
+        self.assertEqual(summary["settings"]["two_tower_input_dimension"], 768)
+        self.assertEqual(summary["settings"]["two_tower_hidden"], config.TWO_TOWER_HIDDEN)
+        self.assertEqual(summary["settings"]["two_tower_output"], config.TWO_TOWER_OUTPUT)
+        self.assertEqual(summary["settings"]["two_tower_epochs"], config.TWO_TOWER_EPOCHS)
+        self.assertEqual(summary["settings"]["two_tower_optimizer"], "Adam")
+        self.assertEqual(summary["models"]["popularity"]["ndcg_at_5"], 1.0)
+        self.assertEqual(
+            summary["training"]["popularity"], {"device": "not_applicable"}
+        )
+        with self.assertRaisesRegex(DataError, "existing output"):
+            run_experiment(data, self.root / "run")
         with patch.object(model, "score", return_value=np.array([np.nan, 0.0])):
             with self.assertRaisesRegex(DataError, "invalid scores"):
                 evaluate_model(model, data.evaluation, self.root / "nan")
         with patch.object(model, "score", return_value=np.array([1.0])):
             with self.assertRaisesRegex(DataError, "invalid scores"):
                 evaluate_model(model, data.evaluation, self.root / "wrong-length")
+
+    def test_collaborative_training_metadata_is_exported(self) -> None:
+        data = load_development()
+        output = self.root / "collaborative"
+        with (
+            patch.object(config, "MODELS", (BPRMFModel, LightGCNModel)),
+            patch.multiple(config, BPR_EPOCHS=1, BPR_DIM=4, LIGHTGCN_LAYERS=1),
+        ):
+            run_experiment(data, output)
+        with (output / "metrics.json").open(encoding="utf-8") as handle:
+            training = json.load(handle)["training"]
+        for name in ("bpr_mf", "lightgcn"):
+            metadata = training[name]
+            self.assertEqual(metadata["epochs"], 1)
+            self.assertTrue(math.isfinite(metadata["final_loss"]))
+            self.assertGreater(metadata["trained_users"], 0)
+            self.assertGreater(metadata["trained_articles"], 0)
+            self.assertIn(metadata["device"], ("cpu", "mps", "cuda"))
+        self.assertGreater(training["lightgcn"]["unique_graph_edges"], 0)
+
+    def test_nontrained_model_devices_are_exported(self) -> None:
+        data = load_development()
+        output = self.root / "nontrained-metadata"
+        with (
+            patch.object(config, "MODELS", (PopularityModel, SemanticModel)),
+            patch.object(config, "SEMANTIC_CACHE", self.root / "semantic.npz"),
+            patch(
+                "src.models.semantic.encode_articles",
+                return_value=np.ones((3, 768), dtype=np.float32),
+            ),
+        ):
+            run_experiment(data, output)
+        with (output / "metrics.json").open(encoding="utf-8") as handle:
+            training = json.load(handle)["training"]
+        self.assertEqual(training["popularity"]["device"], "not_applicable")
+        self.assertEqual(training["semantic"]["device"], "cpu")
+        self.assertEqual(training["semantic"]["frozen_encoder"], config.SEMANTIC_ENCODER)
+
+    def test_held_out_label_mutation_cannot_change_collaborative_fit(self) -> None:
+        data = load_development()
+        mutated = replace(
+            data,
+            evaluation=tuple(
+                replace(
+                    example,
+                    targets=Targets(tuple(1 - label for label in example.targets.labels)),
+                )
+                for example in data.evaluation
+            ),
+        )
+        left = self.root / "held-out-left"
+        right = self.root / "held-out-right"
+        with (
+            patch.object(config, "MODELS", (BPRMFModel, LightGCNModel)),
+            patch.multiple(config, BPR_EPOCHS=1, BPR_DIM=4, LIGHTGCN_LAYERS=1),
+        ):
+            run_experiment(data, left)
+            run_experiment(mutated, right)
+        with (left / "metrics.json").open(encoding="utf-8") as handle:
+            left_training = json.load(handle)["training"]
+        with (right / "metrics.json").open(encoding="utf-8") as handle:
+            right_training = json.load(handle)["training"]
+        self.assertEqual(left_training, right_training)
+        for name in ("bpr_mf", "lightgcn"):
+            with (left / name / "predictions.csv").open(encoding="utf-8") as handle:
+                left_scores = [row["score"] for row in csv.DictReader(handle)]
+            with (right / name / "predictions.csv").open(encoding="utf-8") as handle:
+                right_scores = [row["score"] for row in csv.DictReader(handle)]
+            self.assertEqual(left_scores, right_scores)
 
     def test_metrics_and_equal_user_weight(self) -> None:
         self.assertEqual(ndcg_at_k((1, 0), np.array([1.0, 0.0]), 5), 1.0)

@@ -3,8 +3,11 @@
 from pathlib import Path
 
 from src.contracts import Model
+from src.models.bpr_mf import BPRMFModel
+from src.models.lightgcn import LightGCNModel
 from src.models.popularity import PopularityModel
 from src.models.semantic import SemanticModel
+from src.models.two_tower import TwoTowerModel
 
 ROOT = Path(__file__).resolve().parent.parent
 TRAIN_DIR = ROOT / "data/raw/train"
@@ -20,10 +23,29 @@ DEV_USERS = 5000
 SEED = 4285
 BOOTSTRAP_ITERATIONS = 10000
 
+BPR_DIM = 64
+BPR_EPOCHS = 20
+BPR_NEGATIVES = 1
+BPR_LEARNING_RATE = 0.001
+BPR_L2 = 0.0001
+BPR_INIT_STD = 0.1
+LIGHTGCN_LAYERS = 2
+
 SEMANTIC_ENCODER = "google/embeddinggemma-2"
 SEMANTIC_CACHE = ROOT / "outputs/cache/embeddinggemma-2.npz"
 SEMANTIC_BATCH_SIZE = 8
 SEMANTIC_CPU_THREADS = 2
 
-# Add future models to this fixed list when they are ready for comparison.
-MODELS: tuple[type[Model], ...] = (PopularityModel, SemanticModel)
+TWO_TOWER_HIDDEN = 64
+TWO_TOWER_OUTPUT = 64
+TWO_TOWER_EPOCHS = 20
+TWO_TOWER_LEARNING_RATE = 0.001
+TWO_TOWER_L2 = 0.0001
+
+MODELS: tuple[type[Model], ...] = (
+    PopularityModel,
+    SemanticModel,
+    BPRMFModel,
+    LightGCNModel,
+    TwoTowerModel,
+)
