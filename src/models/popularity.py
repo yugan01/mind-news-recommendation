@@ -15,9 +15,11 @@ class PopularityModel:
 
     def __init__(self) -> None:
         self.clicks: Counter[str] = Counter()
+        self.run_metadata: dict[str, object] = {"device": "not_applicable"}
 
     def fit(self, data: TrainingData) -> None:
         self.clicks.clear()
+        self.run_metadata = {"device": "not_applicable"}
         for example in data.examples:
             self.clicks.update(
                 article_id

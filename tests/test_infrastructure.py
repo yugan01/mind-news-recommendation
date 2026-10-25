@@ -32,6 +32,7 @@ from src.metrics import ndcg_at_k, reciprocal_rank, summarize_users
 from src.models.bpr_mf import BPRMFModel
 from src.models.lightgcn import LightGCNModel
 from src.models.popularity import PopularityModel
+from src.models.semantic import SemanticModel
 from src.run import run_experiment
 
 
@@ -219,7 +220,9 @@ class InfrastructureTests(unittest.TestCase):
         self.assertEqual(summary["settings"]["two_tower_epochs"], config.TWO_TOWER_EPOCHS)
         self.assertEqual(summary["settings"]["two_tower_optimizer"], "Adam")
         self.assertEqual(summary["models"]["popularity"]["ndcg_at_5"], 1.0)
-        self.assertEqual(summary["training"]["popularity"], {})
+        self.assertEqual(
+            summary["training"]["popularity"], {"device": "not_applicable"}
+        )
         with self.assertRaisesRegex(DataError, "existing output"):
             run_experiment(data, self.root / "run")
         with patch.object(model, "score", return_value=np.array([np.nan, 0.0])):
@@ -247,6 +250,24 @@ class InfrastructureTests(unittest.TestCase):
             self.assertGreater(metadata["trained_articles"], 0)
             self.assertIn(metadata["device"], ("cpu", "mps", "cuda"))
         self.assertGreater(training["lightgcn"]["unique_graph_edges"], 0)
+
+    def test_nontrained_model_devices_are_exported(self) -> None:
+        data = load_development()
+        output = self.root / "nontrained-metadata"
+        with (
+            patch.object(config, "MODELS", (PopularityModel, SemanticModel)),
+            patch.object(config, "SEMANTIC_CACHE", self.root / "semantic.npz"),
+            patch(
+                "src.models.semantic.encode_articles",
+                return_value=np.ones((3, 768), dtype=np.float32),
+            ),
+        ):
+            run_experiment(data, output)
+        with (output / "metrics.json").open(encoding="utf-8") as handle:
+            training = json.load(handle)["training"]
+        self.assertEqual(training["popularity"]["device"], "not_applicable")
+        self.assertEqual(training["semantic"]["device"], "cpu")
+        self.assertEqual(training["semantic"]["frozen_encoder"], config.SEMANTIC_ENCODER)
 
     def test_held_out_label_mutation_cannot_change_collaborative_fit(self) -> None:
         data = load_development()

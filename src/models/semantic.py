@@ -19,13 +19,20 @@ class SemanticModel:
     def __init__(self) -> None:
         self.article_indices: dict[str, int] = {}
         self.vectors: NDArray[np.float32] = np.empty((0, 768), dtype=np.float32)
+        self.run_metadata: dict[str, object] = {}
 
     def fit(self, data: TrainingData) -> None:
         from src import config
 
+        self.run_metadata = {}
         self.article_indices, self.vectors = load_article_vectors(
             data.articles, config.SEMANTIC_CACHE, encode_articles
         )
+        self.run_metadata = {
+            "device": "cpu",
+            "frozen_encoder": config.SEMANTIC_ENCODER,
+            "article_vectors": len(self.article_indices),
+        }
 
     def score(self, inputs: RankingInput) -> NDArray[np.float64]:
         if not inputs.history:

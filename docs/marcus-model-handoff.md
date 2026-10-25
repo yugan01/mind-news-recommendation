@@ -19,7 +19,7 @@
 - Elapsed time: 316.73 seconds.
 - Smoke metrics are functionality checks and are not reportable project results.
 
-## Remaining gate
+## Core gate result
 
 The full development run and artifact audit passed at revision `352b0c9ed835345f8f2993bb28090c90f284e351`.
 
