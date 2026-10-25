@@ -45,6 +45,7 @@ Two-tower gate: open. Core unit, lint, type, real-MIND smoke, full development, 
 ## AI-use record for Sood
 
 - Codex inspected the shared repository, proposed and repeatedly audited the design and implementation plans, and drafted model code, tests, and verification fixes during execution.
+- Codex also drafted the shared frozen-vector cache refactor, two-tower implementation, architecture and gradient tests, integration changes, and verification fixes.
 - Marcus approved the architecture and is responsible for reviewing the implementation and deciding which results and claims enter the assessed deliverable.
 - Before submission, replace this operational record with a declaration that states the review, edits, and experiment execution Marcus actually completed; do not claim work that did not occur.
 
@@ -55,3 +56,21 @@ Two-tower gate: open. Core unit, lint, type, real-MIND smoke, full development, 
 - `outputs/dev/metrics.json`: aggregate metrics, fixed settings, and training metadata.
 - `outputs/dev/comparisons.json`: all paired user-bootstrap comparisons.
 - `outputs/dev/beyond_accuracy.json`: diversity, novelty, and candidate-catalogue coverage.
+
+## Two-tower extension
+
+- Revision: `9272e7e5d99724a256c9efd2f63ace7d59cfa34b`.
+- Device and optimization: CPU; 20 epochs; final loss 0.6550074815750122; 184,282 sampled pairs per epoch from 123,135 included impressions; 2,437 mixed-label impressions with empty histories were excluded.
+- Runtime and peak resident memory for the complete cached five-model run: 111.45 seconds and 2,466,725,888 bytes.
+- Development accuracy: NDCG@5 0.2257285263549007; MRR 0.25258386514566983.
+- Frozen EmbeddingGemma article vectors were inputs; the encoder was not fine-tuned.
+- Each fitting pair used its own impression history, not a persistent user-ID embedding.
+- Separate 768→64→64 user and article projections were optimized with the shared within-impression BPR pairs.
+- Empty fitting histories were excluded because inference defines an empty-history profile as zero scores.
+- Results are development-only and do not establish satisfaction or causal preference.
+- Two-tower predictions: `outputs/dev/two_tower/predictions.csv`.
+- Two-tower impression metrics: `outputs/dev/two_tower/impression_metrics.csv`.
+- Aggregate metrics and training metadata: `outputs/dev/metrics.json`.
+- Ten paired comparisons: `outputs/dev/comparisons.json`.
+- Five-model beyond-accuracy metrics: `outputs/dev/beyond_accuracy.json`.
+- Determinism: a second two-tower-only fit produced a byte-identical prediction export.
