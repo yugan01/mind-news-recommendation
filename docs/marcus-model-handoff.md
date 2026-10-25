@@ -59,9 +59,9 @@ Two-tower gate: open. Core unit, lint, type, real-MIND smoke, full development, 
 
 ## Two-tower extension
 
-- Revision: `9272e7e5d99724a256c9efd2f63ace7d59cfa34b`.
+- Revision: `062dff74eac8a63341d2f0631182d0c6cbee7b84`.
 - Device and optimization: CPU; 20 epochs; final loss 0.6550074815750122; 184,282 sampled pairs per epoch from 123,135 included impressions; 2,437 mixed-label impressions with empty histories were excluded.
-- Runtime and peak resident memory for the complete cached five-model run: 111.45 seconds and 2,466,725,888 bytes.
+- Runtime and peak resident memory for the complete cached five-model run: 107.45 seconds and 2,661,548,032 bytes.
 - Development accuracy: NDCG@5 0.2257285263549007; MRR 0.25258386514566983.
 - Frozen EmbeddingGemma article vectors were inputs; the encoder was not fine-tuned.
 - Each fitting pair used its own impression history, not a persistent user-ID embedding.

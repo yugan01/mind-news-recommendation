@@ -21,7 +21,7 @@ Current Kevin scope: implementation, small functional smoke tests, and handoff, 
 
 - [x] BPR-MF baseline; also establishes the shared BPR training loop (embedding tables, pair sampling, loss) that LightGCN reuses. [MVP] Development evidence: `python -m src.run` at `352b0c9`; see `docs/marcus-model-handoff.md`.
 - [x] LightGCN on the user-article click graph, reusing the shared BPR training loop (normalized neighbor aggregation is the delta over BPR-MF). [MVP] Development evidence: `python -m src.run` at `352b0c9`; see `docs/marcus-model-handoff.md`.
-- [x] Two-tower extension (user tower over history, article tower over frozen text vectors, trained on impression click labels). [Strongly recommended] Implemented only after the core gate opened; five-model development evidence from `python -m src.run` at `9272e7e`, with byte-identical rerun and method notes in `docs/marcus-model-handoff.md`.
+- [x] Two-tower extension (user tower over history, article tower over frozen text vectors, trained on impression click labels). [Strongly recommended] Implemented only after the core gate opened; five-model development evidence from `python -m src.run` at `062dff7`, with byte-identical model rerun and method notes in `docs/marcus-model-handoff.md`.
 - [x] Export results, predictions, configurations, and model-method notes. [MVP] Five paired development exports, ten comparisons, beyond-accuracy results, and method notes audited; generated outputs remain ignored and are handed off by path in `docs/marcus-model-handoff.md`.
 
 ## Evaluation, testing, and statistical comparison — Yugan
