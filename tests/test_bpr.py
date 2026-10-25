@@ -70,7 +70,9 @@ class BPRTests(unittest.TestCase):
         pool = build_pair_pool(make_training_data())
         first = sample_pairs(pool, epoch=0, seed=4285, device=torch.device("cpu"))
         repeat = sample_pairs(pool, epoch=0, seed=4285, device=torch.device("cpu"))
+        next_epoch = sample_pairs(pool, epoch=1, seed=4285, device=torch.device("cpu"))
         self.assertTrue(torch.equal(first.negative_indices, repeat.negative_indices))
+        self.assertFalse(torch.equal(first.negative_indices, next_epoch.negative_indices))
         self.assertIn(int(first.negative_indices[0]), (2, 3))
         self.assertEqual(int(first.example_indices[0]), 0)
 
@@ -141,7 +143,7 @@ class BPRTests(unittest.TestCase):
                 )
             )
         result = train_bpr(
-            provider, pool, epochs=5, learning_rate=0.01, l2=0.0, seed=4285
+            provider, pool, epochs=1, learning_rate=0.01, l2=0.0, seed=4285
         )
         after = float(
             np.mean(
@@ -153,11 +155,26 @@ class BPRTests(unittest.TestCase):
             )
         )
         self.assertGreater(after, before)
+        self.assertEqual(len(result.losses), 1)
         self.assertTrue(np.isfinite(result.losses).all())
+
+    def test_exact_sampled_training_masks(self) -> None:
+        data = make_training_data()
+        result = train_bpr(
+            EmbeddingProvider(2, 4, 4, seed=4285),
+            build_pair_pool(data),
+            epochs=1,
+            learning_rate=0.01,
+            l2=0.0,
+            seed=4285,
+        )
+        np.testing.assert_array_equal(result.trained_users, [True, False])
+        np.testing.assert_array_equal(result.trained_articles, [False, True, False, True])
 
     def test_shared_training_rejects_nonfinite_loss(self) -> None:
         data = make_training_data()
         provider = EmbeddingProvider(2, 4, 4, seed=4285)
+        previous_determinism = torch.are_deterministic_algorithms_enabled()
         with (
             patch(
                 "src.models.bpr.bpr_objective",
@@ -173,6 +190,9 @@ class BPRTests(unittest.TestCase):
                 l2=0.0,
                 seed=4285,
             )
+        self.assertEqual(
+            torch.are_deterministic_algorithms_enabled(), previous_determinism
+        )
 
     def test_bpr_mf_fit_score_cold_start_and_refit(self) -> None:
         data = make_training_data()
@@ -197,6 +217,16 @@ class BPRTests(unittest.TestCase):
             model.fit(data)
         inputs = replace(data.examples[0].inputs, candidate_ids=("A",))
         np.testing.assert_array_equal(model.score(inputs), np.zeros(1))
+        self.assertIsNotNone(model.state)
+        assert model.state is not None
+        cold = replace(
+            data.examples[0].inputs,
+            user_id="NEW",
+            history=("A", "B"),
+            candidate_ids=("B",),
+        )
+        expected = float(model.state.article_vectors[1] @ model.state.article_vectors[1])
+        np.testing.assert_allclose(model.score(cold), [expected], rtol=0, atol=1e-7)
 
     def test_bpr_mf_rejects_score_before_fit(self) -> None:
         with self.assertRaisesRegex(DataError, "before fit"):

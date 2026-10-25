@@ -9,6 +9,7 @@ from src import config
 from src.contracts import Article, Example, RankingInput, Targets, TrainingData
 from src.data import DataError
 from src.models.bpr import EmbeddingProvider
+from src.models.bpr_mf import BPRMFModel
 from src.models.lightgcn import (
     LightGCNEmbeddings,
     LightGCNModel,
@@ -70,6 +71,18 @@ class LightGCNTests(unittest.TestCase):
         np.testing.assert_allclose(one_users.detach().numpy().ravel(), [2.0, 3.0])
         np.testing.assert_allclose(
             one_articles.detach().numpy().ravel(), [2.0, 3.0, 4.0, 8.0]
+        )
+        data = graph_fixture()
+        with patch.multiple(config, BPR_EPOCHS=2, BPR_DIM=4, LIGHTGCN_LAYERS=0):
+            matrix_factorization = BPRMFModel()
+            lightgcn = LightGCNModel()
+            matrix_factorization.fit(data)
+            lightgcn.fit(data)
+        np.testing.assert_allclose(
+            lightgcn.score(data.examples[0].inputs),
+            matrix_factorization.score(data.examples[0].inputs),
+            rtol=0,
+            atol=1e-7,
         )
 
     def test_trained_masks_expand_exactly_two_hops(self) -> None:

@@ -4,7 +4,7 @@
 
 - Development only; supplied validation remained unopened.
 - BPR pairs: each fitting click versus one displayed unclicked candidate from the same impression per epoch.
-- LightGCN graph: distinct fitting history/click edges, symmetric degree normalization, two propagation layers in the fixed development configuration.
+- LightGCN graph: distinct fitting history/click edges, symmetric degree normalization, two propagation layers, and a uniform mean over layer 0 through layer 2 in the fixed development configuration.
 - Shared settings: dimension 64, 20 epochs, Adam 0.001, sampled layer-0 L2 0.0001, seed 4285.
 - Scoring: inner product with explicit trained-evidence masking and history fallback for untrained users.
 

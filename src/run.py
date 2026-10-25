@@ -35,7 +35,9 @@ def run_experiment(data: ExperimentData, output_dir: Path) -> None:
             "bpr_learning_rate": config.BPR_LEARNING_RATE,
             "bpr_l2": config.BPR_L2,
             "bpr_init_std": config.BPR_INIT_STD,
+            "bpr_optimizer": "Adam",
             "lightgcn_layers": config.LIGHTGCN_LAYERS,
+            "lightgcn_layer_combination": "uniform_mean",
         }
     )
     results: dict[str, dict[str, int | float]] = {}

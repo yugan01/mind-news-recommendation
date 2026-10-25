@@ -181,44 +181,48 @@ def train_bpr(
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+    previous_determinism = torch.are_deterministic_algorithms_enabled()
     torch.use_deterministic_algorithms(True)
-    device = training_device()
-    provider = provider.to(device)
-    optimizer = torch.optim.Adam(
-        provider.parameters(), lr=learning_rate, weight_decay=0.0
-    )
-    trained_users = np.zeros(provider.user_embeddings.num_embeddings, dtype=np.bool_)
-    trained_articles = np.zeros(
-        provider.article_embeddings.num_embeddings, dtype=np.bool_
-    )
-    losses: list[float] = []
-    for epoch in range(epochs):
-        pairs = sample_pairs(pool, epoch, seed, device)
-        trained_users[pairs.user_indices.detach().cpu().numpy()] = True
-        trained_articles[pairs.positive_indices.detach().cpu().numpy()] = True
-        trained_articles[pairs.negative_indices.detach().cpu().numpy()] = True
-        optimizer.zero_grad(set_to_none=True)
-        loss = bpr_objective(provider, pairs, l2)
-        if not torch.isfinite(loss):
-            raise DataError(f"BPR produced non-finite loss at epoch {epoch}")
-        loss.backward()  # type: ignore[no-untyped-call]
-        optimizer.step()
-        losses.append(float(loss.detach().cpu()))
-    provider.eval()
-    with torch.no_grad():
-        users, articles = provider()
-        if not torch.isfinite(users).all() or not torch.isfinite(articles).all():
-            raise DataError("BPR produced non-finite embeddings")
-        user_vectors = users.detach().cpu().numpy().astype(np.float32, copy=True)
-        article_vectors = articles.detach().cpu().numpy().astype(np.float32, copy=True)
-    trained_users, trained_articles = provider.expand_trained_masks(
-        trained_users, trained_articles
-    )
-    return TrainingResult(
-        user_vectors,
-        article_vectors,
-        trained_users,
-        trained_articles,
-        tuple(losses),
-        str(device),
-    )
+    try:
+        device = training_device()
+        provider = provider.to(device)
+        optimizer = torch.optim.Adam(
+            provider.parameters(), lr=learning_rate, weight_decay=0.0
+        )
+        trained_users = np.zeros(provider.user_embeddings.num_embeddings, dtype=np.bool_)
+        trained_articles = np.zeros(
+            provider.article_embeddings.num_embeddings, dtype=np.bool_
+        )
+        losses: list[float] = []
+        for epoch in range(epochs):
+            pairs = sample_pairs(pool, epoch, seed, device)
+            trained_users[pairs.user_indices.detach().cpu().numpy()] = True
+            trained_articles[pairs.positive_indices.detach().cpu().numpy()] = True
+            trained_articles[pairs.negative_indices.detach().cpu().numpy()] = True
+            optimizer.zero_grad(set_to_none=True)
+            loss = bpr_objective(provider, pairs, l2)
+            if not torch.isfinite(loss):
+                raise DataError(f"BPR produced non-finite loss at epoch {epoch}")
+            loss.backward()  # type: ignore[no-untyped-call]
+            optimizer.step()
+            losses.append(float(loss.detach().cpu()))
+        provider.eval()
+        with torch.no_grad():
+            users, articles = provider()
+            if not torch.isfinite(users).all() or not torch.isfinite(articles).all():
+                raise DataError("BPR produced non-finite embeddings")
+            user_vectors = users.detach().cpu().numpy().astype(np.float32, copy=True)
+            article_vectors = articles.detach().cpu().numpy().astype(np.float32, copy=True)
+        trained_users, trained_articles = provider.expand_trained_masks(
+            trained_users, trained_articles
+        )
+        return TrainingResult(
+            user_vectors,
+            article_vectors,
+            trained_users,
+            trained_articles,
+            tuple(losses),
+            str(device),
+        )
+    finally:
+        torch.use_deterministic_algorithms(previous_determinism)
