@@ -38,6 +38,14 @@ def run_experiment(data: ExperimentData, output_dir: Path) -> None:
             "bpr_optimizer": "Adam",
             "lightgcn_layers": config.LIGHTGCN_LAYERS,
             "lightgcn_layer_combination": "uniform_mean",
+            "two_tower_input_dimension": 768,
+            "two_tower_hidden": config.TWO_TOWER_HIDDEN,
+            "two_tower_output": config.TWO_TOWER_OUTPUT,
+            "two_tower_epochs": config.TWO_TOWER_EPOCHS,
+            "two_tower_learning_rate": config.TWO_TOWER_LEARNING_RATE,
+            "two_tower_l2": config.TWO_TOWER_L2,
+            "two_tower_optimizer": "Adam",
+            "two_tower_frozen_encoder": config.SEMANTIC_ENCODER,
         }
     )
     results: dict[str, dict[str, int | float]] = {}

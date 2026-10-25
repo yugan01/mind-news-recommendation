@@ -213,6 +213,11 @@ class InfrastructureTests(unittest.TestCase):
         self.assertEqual(
             summary["settings"]["lightgcn_layer_combination"], "uniform_mean"
         )
+        self.assertEqual(summary["settings"]["two_tower_input_dimension"], 768)
+        self.assertEqual(summary["settings"]["two_tower_hidden"], config.TWO_TOWER_HIDDEN)
+        self.assertEqual(summary["settings"]["two_tower_output"], config.TWO_TOWER_OUTPUT)
+        self.assertEqual(summary["settings"]["two_tower_epochs"], config.TWO_TOWER_EPOCHS)
+        self.assertEqual(summary["settings"]["two_tower_optimizer"], "Adam")
         self.assertEqual(summary["models"]["popularity"]["ndcg_at_5"], 1.0)
         self.assertEqual(summary["training"]["popularity"], {})
         with self.assertRaisesRegex(DataError, "existing output"):

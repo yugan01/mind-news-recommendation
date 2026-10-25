@@ -15,6 +15,7 @@ from src.models.bpr_mf import BPRMFModel
 from src.models.lightgcn import LightGCNModel
 from src.models.popularity import PopularityModel
 from src.models.semantic import SemanticModel
+from src.models.two_tower import TwoTowerModel
 from src.run import run_experiment
 
 
@@ -52,10 +53,17 @@ def main() -> None:
     with patch.multiple(
         config,
         SEMANTIC_CACHE=output / "vectors.npz",
-        MODELS=(PopularityModel, SemanticModel, BPRMFModel, LightGCNModel),
+        MODELS=(
+            PopularityModel,
+            SemanticModel,
+            BPRMFModel,
+            LightGCNModel,
+            TwoTowerModel,
+        ),
         BPR_EPOCHS=2,
         BPR_DIM=8,
         LIGHTGCN_LAYERS=1,
+        TWO_TOWER_EPOCHS=2,
     ):
         run_experiment(data, output)
         analyze(output)

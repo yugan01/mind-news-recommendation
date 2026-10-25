@@ -7,6 +7,7 @@ from src.models.bpr_mf import BPRMFModel
 from src.models.lightgcn import LightGCNModel
 from src.models.popularity import PopularityModel
 from src.models.semantic import SemanticModel
+from src.models.two_tower import TwoTowerModel
 
 ROOT = Path(__file__).resolve().parent.parent
 TRAIN_DIR = ROOT / "data/raw/train"
@@ -46,4 +47,5 @@ MODELS: tuple[type[Model], ...] = (
     SemanticModel,
     BPRMFModel,
     LightGCNModel,
+    TwoTowerModel,
 )

@@ -55,6 +55,9 @@ def tower_fixture(*, include_empty: bool = False) -> tuple[TrainingData, NDArray
 
 
 class TwoTowerTests(unittest.TestCase):
+    def test_two_tower_is_registered_last(self) -> None:
+        self.assertEqual(tuple(model().name for model in config.MODELS)[-1], "two_tower")
+
     def test_fixed_settings_and_exact_separate_architecture(self) -> None:
         self.assertEqual(config.TWO_TOWER_HIDDEN, 64)
         self.assertEqual(config.TWO_TOWER_OUTPUT, 64)
