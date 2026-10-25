@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from src import config
 from src.analyze import analyze
+from src.beyond import analyze_beyond
 from src.contracts import TrainingData
 from src.data import ExperimentData, load_development
 from src.models.popularity import PopularityModel
@@ -49,6 +50,7 @@ def main() -> None:
     ):
         run_experiment(data, output)
         analyze(output)
+        analyze_beyond(data, output)
     print(f"Real-MIND smoke passed: {len(data.training.articles)} articles, two dev impressions.")
     print("Smoke metrics are not reportable experiment results; validation was not opened.")
 

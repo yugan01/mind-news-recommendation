@@ -36,6 +36,7 @@ Once the models and their tests are ready:
 ```sh
 python -m src.run
 python -m src.analyze
+python -m src.beyond
 ```
 
 These fit every enabled model on the full chronological training partition and evaluate the same 5,000-user development cohort. The initial semantic run encodes the full training article metadata corpus, unlike the smoke commands. Results appear in `outputs/dev/metrics.json`, per-model `predictions.csv` and `impression_metrics.csv`, and `comparisons.json`. NDCG@5 and MRR weight users equally; comparisons use paired user bootstrap intervals and reject mismatched examples. Rerunning replaces outputs, so retain any experiment results needed for analysis before rerunning.
@@ -44,6 +45,9 @@ After the team fixes all model and preprocessing decisions, obtain `MINDsmall_de
 
 ```sh
 python -m src.final
+python -m src.beyond_final
 ```
 
 This fits all enabled models on all supplied training interactions, evaluates all eligible validation users without sampling, and writes metrics, predictions, and paired comparisons to `outputs/final/`. Additional validation article metadata can be embedded without using its interaction labels for fitting. This final path has synthetic test coverage, but Kevin has not run it on actual validation data. Full semantic development experiments have likewise not been run by Kevin.
+
+The `beyond` commands only post-process existing exports and cached embeddings. See `docs/beyond-accuracy.md` for metric definitions; the real-MIND smoke also exercises these metrics on its tiny sample. LLM judging is deferred and is not required by these commands.

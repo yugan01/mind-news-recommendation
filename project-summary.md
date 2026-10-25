@@ -12,7 +12,7 @@ Recommend news articles using a user's previous article clicks and the text of c
 
 All three embed users and articles in a shared vector space and score by similarity, differing only in where the embeddings come from. BPR-MF matrix factorization and training-click popularity serve as classical baselines, and BPR-MF versus LightGCN doubles as a controlled ablation of what graph propagation contributes.
 
-Scope is split into MVP and extras. MVP: the frozen-encoder vs LightGCN comparison with BPR-MF and popularity baselines, accuracy metrics with confidence intervals, subgroup analysis, and failure analysis. Extras, added only if time allows after the MVP works: beyond-accuracy metrics (standard formulations only: embedding-based intra-list diversity, novelty as self-information, catalogue coverage, Gini exposure concentration), history-length sensitivity (latest 5/10/20), and the LLM-as-judge panel. The two-tower model is strongly recommended once the core comparison is stable. TF-IDF is excluded from the comparison; BPR-MF is the sole classical baseline.
+Scope is split into MVP and extras. MVP: the frozen-encoder vs LightGCN comparison with BPR-MF and popularity baselines, accuracy metrics with confidence intervals, subgroup analysis, and failure analysis. Extras, added only if time allows after the MVP works: beyond-accuracy metrics (standard formulations only: embedding-based intra-list diversity, novelty as self-information, catalogue coverage), history-length sensitivity (latest 5/10/20), and the LLM-as-judge panel. The two-tower model is strongly recommended once the core comparison is stable. TF-IDF is excluded from the comparison; BPR-MF is the sole classical baseline.
 
 This revision responds to Prof Kan's feedback that a bare TF-IDF-versus-embeddings accuracy comparison is "not very substantial": the comparison now spans multiple embedding sources, per-user subgroups, and beyond-accuracy metrics.
 
@@ -71,7 +71,7 @@ Average scores across each user's impressions, then across users. Compare method
 Because no single aggregate number answers the core question, add three further evaluation strands:
 
 - Subgroup analysis: users with 10–19 history articles versus 20 or more; interest narrowness (category entropy of the history); user connectivity in the click graph. The substantive finding is which method works for whom, not only the aggregate ranking. History-length sensitivity using the latest 5, 10, and 20 articles on users with at least 20 available is an extra.
-- Beyond-accuracy metrics: intra-list diversity, novelty (inverse popularity of ranked articles), catalogue coverage across users, and exposure concentration — whether a model funnels everyone into the same popular articles.
+- Beyond-accuracy metrics: intra-list diversity, novelty (inverse popularity of ranked articles), and catalogue coverage across users.
 - LLM-as-judge (extra): on a sampled user subset, an LLM sees the user's history and each model's top-5 and rates alignment, novelty, diversity, and article quality against a fixed published rubric, with manual spot-checks for calibration. This measures recommendation quality where click labels provide no ground truth.
 
 Inspect examples where one representation succeeds and another fails — including graph methods failing on cold-start or niche users — and where popularity unexpectedly performs best.

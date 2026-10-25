@@ -65,6 +65,10 @@ python -m src.final
 
 Run this once for the final comparison. It fits every enabled model on all supplied training impressions, evaluates all eligible validation users without sampling, and writes metrics, predictions, and paired comparisons to `outputs/final/`. Freezing decisions is a team checkpoint; there is no software freezing subsystem.
 
+## Beyond-accuracy analysis
+
+After development predictions and the semantic vector cache exist, run `python -m src.beyond`. After the final experiment, use `python -m src.beyond_final` instead. These read existing exports/cache only and write `beyond_accuracy.json`: top-5 semantic diversity, popularity-based novelty, and candidate-catalogue coverage. They do not fit models or run the encoder. All three are covered by synthetic unit tests and the real-MIND smoke command. Definitions and aggregation choices are in `docs/beyond-accuracy.md`.
+
 ## Tests
 
 Small real-model functionality check (downloads the encoder on first use, but embeds only four synthetic articles):
