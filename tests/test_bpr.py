@@ -43,6 +43,12 @@ def make_training_data() -> TrainingData:
 
 
 class BPRTests(unittest.TestCase):
+    def test_collaborative_models_are_registered_after_existing_models(self) -> None:
+        self.assertEqual(
+            tuple(model_type().name for model_type in config.MODELS),
+            ("popularity", "semantic", "bpr_mf", "lightgcn"),
+        )
+
     def test_fixed_training_settings(self) -> None:
         self.assertEqual(config.BPR_DIM, 64)
         self.assertEqual(config.BPR_EPOCHS, 20)

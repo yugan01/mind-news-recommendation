@@ -1,14 +1,17 @@
 """Run the fixed development experiment: python -m src.run."""
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
 
 from src import config
-from src.data import ExperimentData, load_development
+from src.data import DataError, ExperimentData, load_development
 from src.evaluate import evaluate_model
 
 
 def run_experiment(data: ExperimentData, output_dir: Path) -> None:
+    if output_dir.exists() and any(output_dir.iterdir()):
+        raise DataError(f"Refusing to mix fresh results with existing output: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
     summary: dict[str, object] = {
         "settings": {
@@ -21,14 +24,34 @@ def run_experiment(data: ExperimentData, output_dir: Path) -> None:
         "training_impressions": len(data.training.examples),
         "models": {},
     }
+    settings = summary["settings"]
+    if not isinstance(settings, dict):
+        raise TypeError("Experiment settings must be a dictionary")
+    settings.update(
+        {
+            "bpr_dimension": config.BPR_DIM,
+            "bpr_epochs": config.BPR_EPOCHS,
+            "bpr_negatives": config.BPR_NEGATIVES,
+            "bpr_learning_rate": config.BPR_LEARNING_RATE,
+            "bpr_l2": config.BPR_L2,
+            "bpr_init_std": config.BPR_INIT_STD,
+            "lightgcn_layers": config.LIGHTGCN_LAYERS,
+        }
+    )
     results: dict[str, dict[str, int | float]] = {}
+    training_metadata: dict[str, dict[str, object]] = {}
     for model_type in config.MODELS:
         model = model_type()
         model.fit(data.training)
         metrics = evaluate_model(model, data.evaluation, output_dir / model.name)
+        metadata = getattr(model, "run_metadata", None)
         results[model.name] = metrics
+        training_metadata[model.name] = (
+            dict(metadata) if isinstance(metadata, Mapping) else {}
+        )
         print(f"{model.name}: {metrics}")
     summary["models"] = results
+    summary["training"] = training_metadata
     (output_dir / "metrics.json").write_text(
         json.dumps(summary, indent=2) + "\n",
         encoding="utf-8",

@@ -10,7 +10,9 @@ from src import config
 from src.analyze import analyze
 from src.beyond import analyze_beyond
 from src.contracts import TrainingData
-from src.data import ExperimentData, load_development
+from src.data import DataError, ExperimentData, load_development
+from src.models.bpr_mf import BPRMFModel
+from src.models.lightgcn import LightGCNModel
 from src.models.popularity import PopularityModel
 from src.models.semantic import SemanticModel
 from src.run import run_experiment
@@ -18,7 +20,11 @@ from src.run import run_experiment
 
 def load_smoke() -> ExperimentData:
     data = load_development()
-    training = data.training.examples[:2]
+    training = tuple(
+        example for example in data.training.examples if set(example.targets.labels) == {0, 1}
+    )[:2]
+    if len(training) != 2:
+        raise DataError("Real-MIND smoke needs two mixed-label fitting impressions")
     evaluation = data.evaluation[:2]
     article_ids = sorted(
         {
@@ -46,7 +52,10 @@ def main() -> None:
     with patch.multiple(
         config,
         SEMANTIC_CACHE=output / "vectors.npz",
-        MODELS=(PopularityModel, SemanticModel),
+        MODELS=(PopularityModel, SemanticModel, BPRMFModel, LightGCNModel),
+        BPR_EPOCHS=2,
+        BPR_DIM=8,
+        LIGHTGCN_LAYERS=1,
     ):
         run_experiment(data, output)
         analyze(output)
