@@ -23,6 +23,8 @@
 
 The full development run and artifact audit passed at revision `352b0c9ed835345f8f2993bb28090c90f284e351`.
 
+Two-tower gate: open. Core unit, lint, type, real-MIND smoke, full development, paired-output, beyond-accuracy, and byte-determinism checks all passed; validation remained unopened.
+
 ## Development run
 
 - Revision: `352b0c9ed835345f8f2993bb28090c90f284e351`.
