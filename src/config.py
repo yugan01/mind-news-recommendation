@@ -35,6 +35,12 @@ SEMANTIC_CACHE = ROOT / "outputs/cache/embeddinggemma-2.npz"
 SEMANTIC_BATCH_SIZE = 8
 SEMANTIC_CPU_THREADS = 2
 
+TWO_TOWER_HIDDEN = 64
+TWO_TOWER_OUTPUT = 64
+TWO_TOWER_EPOCHS = 20
+TWO_TOWER_LEARNING_RATE = 0.001
+TWO_TOWER_L2 = 0.0001
+
 MODELS: tuple[type[Model], ...] = (
     PopularityModel,
     SemanticModel,
