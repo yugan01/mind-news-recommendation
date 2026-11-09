@@ -13,7 +13,7 @@ python -m scripts.download_mind
 python -m scripts.smoke_mind
 ```
 
-The unit tests use synthetic data/vectors and do not load an encoder. `smoke_semantic` uses the real encoder on four synthetic articles and two impressions, checking normalized finite vectors, exports, unseen-user scoring, and identical predictions from cached vectors. `smoke_mind` reads the original training files through the real chronological development loader, then restricts fitting and evaluation to two impressions each and encodes only their referenced articles. It exercises both models, metric exports, and paired analysis. Neither smoke command opens supplied validation; neither produces reportable experiment results. Their caches and outputs are isolated under `outputs/smoke/`.
+The unit tests use synthetic data/vectors and do not load an encoder. `smoke_semantic` uses the real encoder on four synthetic articles and two impressions, checking normalized finite vectors, exports, unseen-user scoring, and identical predictions from cached vectors. `smoke_mind` reads the original training files through the real chronological development loader, then restricts fitting and evaluation to two impressions each and encodes only their referenced articles. It exercises all five models, metric exports, and paired analysis. Neither smoke command opens supplied validation; neither produces reportable experiment results. Their caches and outputs are isolated under `outputs/smoke/`.
 
 The shared EmbeddingGemma processor requires the image dependencies even though the vision/audio model encoders are disabled. On CPU-only machines, install matching CPU Torch/Torchvision wheels from the official PyTorch CPU index before installing the requirements if necessary:
 
