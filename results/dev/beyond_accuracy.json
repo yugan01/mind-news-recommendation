@@ -1,0 +1,47 @@
+{
+  "popularity": {
+    "users": 5000,
+    "impressions": 8332,
+    "candidate_catalogue_size": 4523,
+    "recommended_articles": 913,
+    "intra_list_diversity_at_5": 0.24155473721237244,
+    "novelty_bits_at_5": 13.31022761763508,
+    "catalogue_coverage_at_5": 0.2018571744417422
+  },
+  "semantic": {
+    "users": 5000,
+    "impressions": 8332,
+    "candidate_catalogue_size": 4523,
+    "recommended_articles": 1558,
+    "intra_list_diversity_at_5": 0.21621792017682387,
+    "novelty_bits_at_5": 16.7656499910712,
+    "catalogue_coverage_at_5": 0.3444616405040902
+  },
+  "bpr_mf": {
+    "users": 5000,
+    "impressions": 8332,
+    "candidate_catalogue_size": 4523,
+    "recommended_articles": 1390,
+    "intra_list_diversity_at_5": 0.24491841845035323,
+    "novelty_bits_at_5": 16.045843108983316,
+    "catalogue_coverage_at_5": 0.3073181516692461
+  },
+  "lightgcn": {
+    "users": 5000,
+    "impressions": 8332,
+    "candidate_catalogue_size": 4523,
+    "recommended_articles": 1343,
+    "intra_list_diversity_at_5": 0.2441734037608301,
+    "novelty_bits_at_5": 15.596658218375834,
+    "catalogue_coverage_at_5": 0.29692681848330754
+  },
+  "two_tower": {
+    "users": 5000,
+    "impressions": 8332,
+    "candidate_catalogue_size": 4523,
+    "recommended_articles": 1031,
+    "intra_list_diversity_at_5": 0.2328101102151149,
+    "novelty_bits_at_5": 17.11491181594056,
+    "catalogue_coverage_at_5": 0.2279460535043113
+  }
+}

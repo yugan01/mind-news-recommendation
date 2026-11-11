@@ -1,0 +1,242 @@
+{
+  "semantic_minus_popularity": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": 0.08370887338447408,
+        "ci_95": [
+          0.07432501974115063,
+          0.0929803179827071
+        ],
+        "users_improved_fraction": 0.4302,
+        "users_tied_fraction": 0.3428
+      },
+      "mrr": {
+        "mean_paired_difference": 0.08647360900104085,
+        "ci_95": [
+          0.07724742028690582,
+          0.09567536682239505
+        ],
+        "users_improved_fraction": 0.6006,
+        "users_tied_fraction": 0.06
+      }
+    }
+  },
+  "bpr_mf_minus_popularity": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": -0.016039630158527846,
+        "ci_95": [
+          -0.0231237570781473,
+          -0.008872601318820868
+        ],
+        "users_improved_fraction": 0.2386,
+        "users_tied_fraction": 0.4924
+      },
+      "mrr": {
+        "mean_paired_difference": -0.013028454528884407,
+        "ci_95": [
+          -0.020202856876267744,
+          -0.005725686818771919
+        ],
+        "users_improved_fraction": 0.4864,
+        "users_tied_fraction": 0.0892
+      }
+    }
+  },
+  "lightgcn_minus_popularity": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": -0.01685120756967646,
+        "ci_95": [
+          -0.023812507070801823,
+          -0.01003951997052366
+        ],
+        "users_improved_fraction": 0.2322,
+        "users_tied_fraction": 0.4988
+      },
+      "mrr": {
+        "mean_paired_difference": -0.015425589773594399,
+        "ci_95": [
+          -0.022356910390502534,
+          -0.00849281210931737
+        ],
+        "users_improved_fraction": 0.4804,
+        "users_tied_fraction": 0.0894
+      }
+    }
+  },
+  "two_tower_minus_popularity": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": 0.01142711465060637,
+        "ci_95": [
+          0.0029248007523935927,
+          0.020128828301631436
+        ],
+        "users_improved_fraction": 0.3278,
+        "users_tied_fraction": 0.3872
+      },
+      "mrr": {
+        "mean_paired_difference": 0.010369852530499069,
+        "ci_95": [
+          0.001921097811600382,
+          0.019030724450596566
+        ],
+        "users_improved_fraction": 0.5156,
+        "users_tied_fraction": 0.049
+      }
+    }
+  },
+  "bpr_mf_minus_semantic": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": -0.09974850354300192,
+        "ci_95": [
+          -0.10882852592100303,
+          -0.09066335242744902
+        ],
+        "users_improved_fraction": 0.2042,
+        "users_tied_fraction": 0.3526
+      },
+      "mrr": {
+        "mean_paired_difference": -0.09950206352992527,
+        "ci_95": [
+          -0.10864796563221014,
+          -0.09030726850808683
+        ],
+        "users_improved_fraction": 0.3122,
+        "users_tied_fraction": 0.0566
+      }
+    }
+  },
+  "lightgcn_minus_semantic": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": -0.10056008095415053,
+        "ci_95": [
+          -0.10974479501728097,
+          -0.0914191655179343
+        ],
+        "users_improved_fraction": 0.2048,
+        "users_tied_fraction": 0.352
+      },
+      "mrr": {
+        "mean_paired_difference": -0.10189919877463526,
+        "ci_95": [
+          -0.11084813639109255,
+          -0.0928795992518964
+        ],
+        "users_improved_fraction": 0.316,
+        "users_tied_fraction": 0.053
+      }
+    }
+  },
+  "two_tower_minus_semantic": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": -0.07228175873386769,
+        "ci_95": [
+          -0.081052141860812,
+          -0.06361503325386784
+        ],
+        "users_improved_fraction": 0.228,
+        "users_tied_fraction": 0.363
+      },
+      "mrr": {
+        "mean_paired_difference": -0.0761037564705418,
+        "ci_95": [
+          -0.08501567385285956,
+          -0.06734145008301269
+        ],
+        "users_improved_fraction": 0.3514,
+        "users_tied_fraction": 0.0782
+      }
+    }
+  },
+  "lightgcn_minus_bpr_mf": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": -0.0008115774111486083,
+        "ci_95": [
+          -0.0044368300535022245,
+          0.002803985847260344
+        ],
+        "users_improved_fraction": 0.1254,
+        "users_tied_fraction": 0.7396
+      },
+      "mrr": {
+        "mean_paired_difference": -0.00239713524470999,
+        "ci_95": [
+          -0.0062424537433750215,
+          0.0014054128185972156
+        ],
+        "users_improved_fraction": 0.3266,
+        "users_tied_fraction": 0.291
+      }
+    }
+  },
+  "two_tower_minus_bpr_mf": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": 0.02746674480913422,
+        "ci_95": [
+          0.019410384619968062,
+          0.0358759146481925
+        ],
+        "users_improved_fraction": 0.3348,
+        "users_tied_fraction": 0.4188
+      },
+      "mrr": {
+        "mean_paired_difference": 0.023398307059383477,
+        "ci_95": [
+          0.015345233171090428,
+          0.03158233581878123
+        ],
+        "users_improved_fraction": 0.5402,
+        "users_tied_fraction": 0.0512
+      }
+    }
+  },
+  "two_tower_minus_lightgcn": {
+    "paired_users": 5000,
+    "paired_impressions": 8332,
+    "metrics": {
+      "ndcg_at_5": {
+        "mean_paired_difference": 0.028278322220282832,
+        "ci_95": [
+          0.020186586087148465,
+          0.03665525197270947
+        ],
+        "users_improved_fraction": 0.339,
+        "users_tied_fraction": 0.4098
+      },
+      "mrr": {
+        "mean_paired_difference": 0.025795442304093467,
+        "ci_95": [
+          0.01779534748150951,
+          0.03401149662135468
+        ],
+        "users_improved_fraction": 0.546,
+        "users_tied_fraction": 0.054
+      }
+    }
+  }
+}
