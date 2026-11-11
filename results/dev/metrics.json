@@ -1,0 +1,127 @@
+{
+  "settings": {
+    "dev_fraction": 0.2,
+    "min_history": 10,
+    "max_history": 20,
+    "dev_users": 5000,
+    "seed": 4285,
+    "bpr_dimension": 64,
+    "bpr_epochs": 20,
+    "bpr_negatives": 1,
+    "bpr_learning_rate": 0.001,
+    "bpr_l2": 0.0001,
+    "bpr_init_std": 0.1,
+    "bpr_optimizer": "Adam",
+    "lightgcn_layers": 2,
+    "lightgcn_layer_combination": "uniform_mean",
+    "two_tower_input_dimension": 768,
+    "two_tower_hidden": 64,
+    "two_tower_output": 64,
+    "two_tower_epochs": 20,
+    "two_tower_learning_rate": 0.001,
+    "two_tower_l2": 0.0001,
+    "two_tower_optimizer": "Adam",
+    "two_tower_frozen_encoder": "google/embeddinggemma-2"
+  },
+  "training_impressions": 125572,
+  "models": {
+    "popularity": {
+      "users": 5000,
+      "impressions": 8332,
+      "ndcg_at_5": 0.2143014117042943,
+      "mrr": 0.24221071518226628
+    },
+    "semantic": {
+      "users": 5000,
+      "impressions": 8332,
+      "ndcg_at_5": 0.29801028508876837,
+      "mrr": 0.3286843241833071
+    },
+    "bpr_mf": {
+      "users": 5000,
+      "impressions": 8332,
+      "ndcg_at_5": 0.19826178154576643,
+      "mrr": 0.2291822606533819
+    },
+    "lightgcn": {
+      "users": 5000,
+      "impressions": 8332,
+      "ndcg_at_5": 0.19745020413461783,
+      "mrr": 0.22678512540867188
+    },
+    "two_tower": {
+      "users": 5000,
+      "impressions": 8332,
+      "ndcg_at_5": 0.2257285263549007,
+      "mrr": 0.2525805677127653
+    }
+  },
+  "training": {
+    "popularity": {
+      "device": "not_applicable"
+    },
+    "semantic": {
+      "device": "cpu",
+      "frozen_encoder": "google/embeddinggemma-2",
+      "article_vectors": 51282
+    },
+    "bpr_mf": {
+      "device": "cpu",
+      "epochs": 20,
+      "final_loss": 0.6733453869819641,
+      "included_impressions": 125572,
+      "skipped_impressions": 0,
+      "trained_users": 45848,
+      "trained_articles": 14010
+    },
+    "lightgcn": {
+      "device": "cpu",
+      "epochs": 20,
+      "final_loss": 0.6861361265182495,
+      "layers": 2,
+      "unique_graph_edges": 720811,
+      "included_impressions": 125572,
+      "skipped_impressions": 0,
+      "trained_users": 45848,
+      "trained_articles": 38086
+    },
+    "two_tower": {
+      "device": "cpu",
+      "epochs": 20,
+      "losses": [
+        0.6931828260421753,
+        0.6928062438964844,
+        0.692331075668335,
+        0.6917277574539185,
+        0.6909204125404358,
+        0.6898975372314453,
+        0.6886432766914368,
+        0.6870799660682678,
+        0.6852390170097351,
+        0.6830686330795288,
+        0.6806147694587708,
+        0.6776688694953918,
+        0.6743927001953125,
+        0.6710028648376465,
+        0.667285144329071,
+        0.6639698147773743,
+        0.6603885293006897,
+        0.6580285429954529,
+        0.6563122272491455,
+        0.6550071239471436
+      ],
+      "final_loss": 0.6550071239471436,
+      "pair_count": 184282,
+      "included_impressions": 123135,
+      "skipped_impressions": 0,
+      "skipped_empty_histories": 2437,
+      "input_dimension": 768,
+      "architecture": "separate 768->64->64 towers",
+      "optimizer": "Adam",
+      "seed": 4285,
+      "learning_rate": 0.001,
+      "l2": 0.0001,
+      "frozen_encoder": "google/embeddinggemma-2"
+    }
+  }
+}
